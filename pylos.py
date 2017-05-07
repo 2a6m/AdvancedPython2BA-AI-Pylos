@@ -255,18 +255,17 @@ class PylosClient(game.GameClient):
 
     def choose(self, moves):
         # print(moves)
-        if len(moves) > 0:
-            choice0 = []
-            choice1 = []
-            for elem in moves:
-                if moves[elem] == 0:
-                    choice0.append(elem)
-                elif moves[elem] == 1:
-                    choice1.append(elem)
-                else:
-                    pass
-            if len(choice0) > 0:
-                return choice0[0]
+        price = 10
+        for elem in moves:
+            if moves[elem] <= price:
+                choice = elem
+                price = moves[elem]
+            elif moves[elem] == price:
+                pass
+                # voir si on choisi selon le type de mouvement qu'on fait
+            else:
+                pass
+        return choice
 
     def noStrat(self, state):
         for layer in range(4):
