@@ -231,19 +231,7 @@ class PylosClient(game.GameClient):
             test = self.upperlayer(state, moves)
             #print('TEST upperlayer', test)
             if test == True:
-                #print(moves)
-                if len(moves) > 0:
-                    choice0 = []
-                    choice1 = []
-                    for elem in moves:
-                        if moves[elem] == 0:
-                            choice0.append(elem)
-                        elif moves[elem] == 1:
-                            choice1.append(elem)
-                        else:
-                            pass
-                    if len(choice0) > 0:
-                        return choice0[0]
+                return self.choose(moves)
             else:
                 return self.noStrat(state)
 
@@ -264,6 +252,21 @@ class PylosClient(game.GameClient):
                     except:
                         pass
         return out
+
+    def choose(self, moves):
+        # print(moves)
+        if len(moves) > 0:
+            choice0 = []
+            choice1 = []
+            for elem in moves:
+                if moves[elem] == 0:
+                    choice0.append(elem)
+                elif moves[elem] == 1:
+                    choice1.append(elem)
+                else:
+                    pass
+            if len(choice0) > 0:
+                return choice0[0]
 
     def noStrat(self, state):
         for layer in range(4):
