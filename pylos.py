@@ -229,9 +229,9 @@ class PylosClient(game.GameClient):
         moves = dict()
         try:
             test = self.upperlayer(state, moves)
-            print('TEST upperlayer', test)
+            #print('TEST upperlayer', test)
             if test == True:
-                print(moves)
+                #print(moves)
                 if len(moves) > 0:
                     choice0 = []
                     choice1 = []
@@ -242,7 +242,6 @@ class PylosClient(game.GameClient):
                             choice1.append(elem)
                         else:
                             pass
-                    print(choice0)
                     if len(choice0) > 0:
                         return choice0[0]
             else:
