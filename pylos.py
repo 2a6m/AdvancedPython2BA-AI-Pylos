@@ -239,6 +239,7 @@ class PylosClient(game.GameClient):
             return self.noStrat(state)
 
     def upperlayer(self, state, moves):
+        price = 1
         out = False
         for layer in range(4):
             for row in range(4 - layer):
@@ -247,15 +248,40 @@ class PylosClient(game.GameClient):
                         state.validPosition(layer + 1, row, column)
                         if state.get(layer + 1, row, column) == None:
                             #   if square alors go et prendre sur layer plus basse possible
-                            moves[json.dumps({'move': 'place', 'to': [layer + 1, row, column]})] = 0
+                            moves[json.dumps({'move': 'place', 'to': [layer + 1, row, column]})] = price
                             out = True
+                            cible = [(layer+1, row, column),
+                                     (layer, row, column),
+                                     (layer, row+1, column),
+                                     (layer, row+1, column+1),
+                                     (layer, row, column+1)]
+                            self.deplace(price, moves, state, cible)
                     except:
                         pass
         return out
 
+    def deplace(self, price, moves, state, cible):
+        print('test')
+        price -= 1
+        for layer in range(4):
+            for row in range(4 - layer):
+                for column in range(4-layer):
+                    if layer < cible[0][0]:
+                        if (layer, row, column) not in cible:
+                            try:
+                                print(layer, row, column)
+                                state.remove((layer, row, column), self._playernb)
+                                moves[json.dumps({'move': 'move', 'from': [layer, row, column], 'to': list(cible[0])})] = price
+                            except Exception as e:
+                                #print(e)
+                                pass
+        return
+
+
     def choose(self, moves):
-        # print(moves)
+        print(moves)
         price = 10
+        choice = False
         for elem in moves:
             if moves[elem] <= price:
                 choice = elem
@@ -265,7 +291,11 @@ class PylosClient(game.GameClient):
                 # voir si on choisi selon le type de mouvement qu'on fait
             else:
                 pass
-        return choice
+        if choice:
+            return choice
+        else:
+            return self.noStrat(state)
+            # définir une nouveau type erreur pour gérer les erreurs de L'IA ??
 
     def noStrat(self, state):
         for layer in range(4):
