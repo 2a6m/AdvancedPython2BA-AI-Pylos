@@ -227,7 +227,10 @@ class PylosClient(game.GameClient):
         return it in JSON
         '''
         moves = dict()
+        # dictionnary of move made by turn
+        # dictionnary moves instance of the class reset at each turn ??
         try:
+            # test different specific moves
             test = self.upperlayer(state, moves)
             #print('TEST upperlayer', test)
             if test == True:
@@ -239,16 +242,22 @@ class PylosClient(game.GameClient):
             return self.noStrat(state)
 
     def upperlayer(self, state, moves):
+        '''
+        Look if he can put a sphere on a upper layer
+
+        return True if he finds a move (saved in the dictionnary moves)
+        '''
+        #print('TEST upperlay')
         price = 1
         out = False
         for layer in range(4):
             for row in range(4 - layer):
                 for column in range(4 - layer):
                     try:
-                        state.validPosition(layer + 1, row, column)
-                        if state.get(layer + 1, row, column) == None:
+                        state.validPosition(layer+1, row, column)
+                        if state.get(layer+1, row, column) == None:
                             #   if square alors go et prendre sur layer plus basse possible
-                            moves[json.dumps({'move': 'place', 'to': [layer + 1, row, column]})] = price
+                            moves[json.dumps({'move': 'place', 'to': [layer+1, row, column]})] = price
                             out = True
                             cible = [(layer+1, row, column),
                                      (layer, row, column),
@@ -261,7 +270,13 @@ class PylosClient(game.GameClient):
         return out
 
     def deplace(self, price, moves, state, cible):
-        print('test')
+        '''
+        Look if he can deplace a sphere
+
+        return nothing
+        '''
+        # Est-elle vraiment utile ??
+        #print('TEST deplace, upperlay')
         price -= 1
         for layer in range(4):
             for row in range(4 - layer):
@@ -269,7 +284,6 @@ class PylosClient(game.GameClient):
                     if layer < cible[0][0]:
                         if (layer, row, column) not in cible:
                             try:
-                                print(layer, row, column)
                                 state.remove((layer, row, column), self._playernb)
                                 moves[json.dumps({'move': 'move', 'from': [layer, row, column], 'to': list(cible[0])})] = price
                             except Exception as e:
@@ -279,7 +293,12 @@ class PylosClient(game.GameClient):
 
 
     def choose(self, moves):
-        print(moves)
+        '''
+        look the cheapest move of all the strategic moves
+
+        return the next move
+        '''
+        #print('DICO moves', moves)
         price = 10
         choice = False
         for elem in moves:
@@ -298,6 +317,10 @@ class PylosClient(game.GameClient):
             # définir une nouveau type erreur pour gérer les erreurs de L'IA ??
 
     def noStrat(self, state):
+        '''
+        next move by default
+        '''
+        #print('FAILED NO STRATEGY')
         for layer in range(4):
             for row in range(4 - layer):
                 for column in range(4 - layer):
