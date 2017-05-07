@@ -197,7 +197,7 @@ class PylosClient(game.GameClient):
     
     def _handle(self, message):
         pass
-    
+
     #return move as string
     def _nextmove(self, state):
         '''
@@ -226,9 +226,50 @@ class PylosClient(game.GameClient):
         
         return it in JSON
         '''
+        moves = dict()
+        try:
+            test = self.upperlayer(state, moves)
+            print('TEST upperlayer', test)
+            if test == True:
+                print(moves)
+                if len(moves) > 0:
+                    choice0 = []
+                    choice1 = []
+                    for elem in moves:
+                        if moves[elem] == 0:
+                            choice0.append(elem)
+                        elif moves[elem] == 1:
+                            choice1.append(elem)
+                        else:
+                            pass
+                    print(choice0)
+                    if len(choice0) > 0:
+                        return choice0[0]
+            else:
+                return self.noStrat(state)
+
+        except:
+            return self.noStrat(state)
+
+    def upperlayer(self, state, moves):
+        out = False
         for layer in range(4):
-            for row in range(4-layer):
-                for column in range(4-layer):
+            for row in range(4 - layer):
+                for column in range(4 - layer):
+                    try:
+                        state.validPosition(layer + 1, row, column)
+                        if state.get(layer + 1, row, column) == None:
+                            #   if square alors go et prendre sur layer plus basse possible
+                            moves[json.dumps({'move': 'place', 'to': [layer + 1, row, column]})] = 0
+                            out = True
+                    except:
+                        pass
+        return out
+
+    def noStrat(self, state):
+        for layer in range(4):
+            for row in range(4 - layer):
+                for column in range(4 - layer):
                     if state.get(layer, row, column) == None:
                         return json.dumps({
                             'move': 'place',
