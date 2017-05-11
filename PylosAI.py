@@ -64,7 +64,7 @@ class AI():
         return
 
     def is_place_square_r1(self, place):
-        if self._state.CreateSquare(place):
+        if self._state.createSquare(place):
             if len(self.board_remove()) == 1:
                 price = 0
                 move = {'move': 'place', 'to': list(place), 'remove': self.board_remove()[0]}
@@ -72,12 +72,30 @@ class AI():
         return
 
     def is_place_square_r2(self, place):
+        if self._state.createSquare(place):
+            if len(self.board_remove()) == 2:
+                price = -1
+                # AI doit chercher quelles billes il va retirer
+                move = {'move': 'place', 'to': list(place), 'remove': [self.board_remove()[0], self.board_remove()[1]]}
+                self._moves[json.dumps(move)] = (place, price)
         return
 
     def is_move_square_r1(self, place):
+        if self._state.createSquare(place):
+            if len(self.board_remove()) == 2:
+                price = -1
+                # AI doit chercher quelles billes il va retirer
+                move = {'move': 'move', 'from': self.board_remove()[0], 'to': list(place), 'remove': [self.board_remove()[1], self.board_remove()[2]]}
+                self._moves[json.dumps(move)] = (place, price)
         return
 
     def is_move_square_r2(self, place):
+        if self._state.createSquare(place):
+            if len(self.board_remove()) == 3:
+                price = -2
+                # AI doit chercher quelles billes il va retirer
+                move = {'move': 'move', 'from': self.board_remove()[0], 'to': list(place), 'remove': [self.board_remove()[1], self.board_remove()[2]]}
+                self._moves[json.dumps(move)] = (place, price)
         return
 
     def is_place(self, place):
