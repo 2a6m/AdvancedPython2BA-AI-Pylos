@@ -8,6 +8,7 @@ import argparse
 import socket
 import sys
 import json
+import PylosAI as AI
 
 from lib import game
 
@@ -227,110 +228,9 @@ class PylosClient(game.GameClient):
         
         return it in JSON
         '''
-        self._state = state
-        self._moves = {}
-        # dictionnary of move made by turn
-        # dictionnary moves instance of the class reset at each turn ??
-        try:
-            # test different specific moves
-            test = self.upperlayer()
-            #print('TEST upperlayer', test)
-            if test == True:
-                return self.choose()
-            else:
-                return self.noStrat()
-
-        except:
-            return self.noStrat()
-
-    def upperlayer(self):
-        '''
-        Look if he can put a sphere on a upper layer
-
-        return True if he finds a move (saved in the dictionnary moves)
-        '''
-        #print('TEST upperlay')
-        price = 1
-        out = False
-        for layer in range(4):
-            for row in range(4 - layer):
-                for column in range(4 - layer):
-                    try:
-                        self._state.validPosition(layer+1, row, column)
-                        if self._state.get(layer+1, row, column) == None:
-                            #   if square alors go et prendre sur layer plus basse possible
-                            self._moves[json.dumps({'move': 'place', 'to': [layer+1, row, column]})] = price
-                            out = True
-                            cible = [(layer+1, row, column),
-                                     (layer, row, column),
-                                     (layer, row+1, column),
-                                     (layer, row+1, column+1),
-                                     (layer, row, column+1)]
-                            self.deplace(price, cible)
-                    except:
-                        pass
-        return out
-
-    def deplace(self, price, cible):
-        '''
-        Look if he can deplace a sphere
-
-        return nothing
-        '''
-        # Est-elle vraiment utile ??
-        #print('TEST deplace, upperlay')
-        price -= 1
-        for layer in range(4):
-            for row in range(4 - layer):
-                for column in range(4-layer):
-                    if layer < cible[0][0]:
-                        if (layer, row, column) not in cible:
-                            try:
-                                self._state.remove((layer, row, column), self._playernb)
-                                self._moves[json.dumps({'move': 'move', 'from': [layer, row, column], 'to': list(cible[0])})] = price
-                            except Exception as e:
-                                #print(e)
-                                pass
-        return
-
-
-    def choose(self):
-        '''
-        look the cheapest move of all the strategic moves
-
-        return the next move
-        '''
-        #print('DICO moves', moves)
-        price = 10
-        choice = False
-        for elem in self._moves:
-            if self._moves[elem] <= price:
-                choice = elem
-                price = self._moves[elem]
-            elif self._moves[elem] == price:
-                pass
-                # voir si on choisi selon le type de mouvement qu'on fait
-            else:
-                pass
-        if choice:
-            return choice
-        else:
-            return self.noStrat()
-            # définir une nouveau type erreur pour gérer les erreurs de L'IA ??
-
-    def noStrat(self):
-        '''
-        next move by default
-        '''
-        #print('FAILED NO STRATEGY')
-        for layer in range(4):
-            for row in range(4 - layer):
-                for column in range(4 - layer):
-                    if self._state.get(layer, row, column) == None:
-                        return json.dumps({
-                            'move': 'place',
-                            'to': [layer, row, column]
-                        })
+        print('client', state)
+        search = AI.AI(state, self._playernb)
+        return search.search()
 
 
 if __name__ == '__main__':
