@@ -116,10 +116,9 @@ class Tree_Generator():
 
     def generate_from_free(self, tree, state):
         # Case where the AI places a marble
-        safe_state = pyl.PylosState(state._state['visible'])
         for pos in self.board_free(state):
             price = 1
-            child_state1 = pyl.PylosState(state._state['visible'])
+            child_state1 = copy.deepcopy(pyl.PylosState(state._state['visible']))
             print('iSTATE ', '  ', state._state['visible'])
             print('iCSTATE', '  ', child_state1._state['visible'])
             move = {'move': 'place', 'to': list(pos)}
@@ -150,7 +149,7 @@ class Tree_Generator():
                 if upperpos[0] > pos[0]:
                     move['to'] = list(upperpos)
                     print(upperpos)
-                    child_state2.update(move,0)
+                    child_state2.update(move, 0)
                     if child_state2.createSquare(pos):
                         for combi in self.square_remove(child_state2):
                             move['remove'] = combi
