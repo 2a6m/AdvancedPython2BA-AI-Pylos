@@ -166,7 +166,7 @@ class Tree_Generator():
             self.generate_from_free(child, state)
             self.generate_from_remove(child, state)
         t0.saveTree("TEST.txt")
-        print("arbre généré")
+        print("arbre générée")
 
 
 test = Tree_Generator()
