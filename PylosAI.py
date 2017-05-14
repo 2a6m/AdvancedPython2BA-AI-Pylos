@@ -11,7 +11,6 @@ class AI():
         # Forme du dico ?? {'move':price, 'move':price}
         # Dico ou liste ?? meilleur pour un arbre ??
         self.__origin_state = state
-        self._state = self.reset_state() # state qu'on peut modifier
         self.__player = player
 
     @property
@@ -191,15 +190,17 @@ class AI():
 
         :return: first, tree update; second, tree of the all game
         '''
-        tree_file = 'TEST'
-        game_tree_file = 'GAME_TREE'
+        tree_file = 'TEST.json'
+        game_tree_file = 'GAME_TREE.json'
         if os.path.isfile(game_tree_file):
             tree = Tree.dico2t(game_tree_file)
         elif os.path.isfile(tree_file):
             tree = Tree.dico2t(json.load(tree_file))
         else:
-            y = TG.Tree_Generator()
-            tree = TG.Tree_Generator.generate_tree(state)
+            print('THERE IS NO GAME TREE')
+            tree = {}
+            #y = Tree_Generator()
+            #tree = Tree_Generator.generate_tree(state)
         return tree
 
     def choose(self, matrix):
@@ -212,14 +213,17 @@ class AI():
         mean = []
         for i in matrix:
             for j in matrix:
-                m_elem = (matrix[i][j].endState(self.player), matrix[i][j]['move'])
+                m_elem = (matrix[i][j].endState(self.player), matrix[i][j]['move'], matrix[i][j])
                 mean.append(m_elem)
         value = 0
         move = ''
+        tree = {}
         for elem in mean:
             if elem[0] > value:
                 value = elem[0]
                 move = elem[1]
+                tree = elem[2]
+        tree.saveTree('GAME_TREE.json')
         return move
 
     def search(self, state):
