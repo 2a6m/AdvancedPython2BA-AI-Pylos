@@ -214,7 +214,7 @@ class AI():
             for j in matrix:
                 m_elem = (matrix[i][j].endState(self.player), matrix[i][j]['move'])
                 mean.append(m_elem)
-        value = -5
+        value = 0
         move = ''
         for elem in mean:
             if elem[0] > value:
