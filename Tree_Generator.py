@@ -157,7 +157,7 @@ class Tree_Generator():
 
     def generate_tree(self, state):
         print(state)
-        t0 = Tree.Tree(state)
+        t0 = Tree.Tree(state, 0, [])
         print("t0i = ", t0)
         self.generate_from_free(t0, state)
         self.generate_from_remove(t0, state)

@@ -3,7 +3,6 @@ import json
 import copy
 import os.path
 import Tree
-import Tree_Generator as TG
 
 class AI():
     '''Class representing a AI for the Pylos game.'''
@@ -199,6 +198,7 @@ class AI():
         elif os.path.isfile(tree_file):
             tree = Tree.dico2t(json.load(tree_file))
         else:
+            y = TG.Tree_Generator()
             tree = TG.Tree_Generator.generate_tree(state)
         return tree
 
