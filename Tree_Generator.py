@@ -129,12 +129,12 @@ class Tree_Generator():
                     move['remove'] = combi
                     child_state2.update(move, 0)
                     price -= len(combi)
-                    tree.addChild(Tree.Tree(child_state2, move, price))
+                    tree.addChild(Tree.Tree(child_state2, price, move))
             else:
                 child_state1.update(move, 0)
                 print('fSTATE ', '  ', state._state['visible'])
                 print('fCSTATE', '  ', child_state1._state['visible'])
-                tree.addChild(Tree.Tree(child_state1, move, price))
+                tree.addChild(Tree.Tree(child_state1, price, move))
 
     def generate_from_remove(self, tree, state):
         # Case where the AI deplaces an existing marble
@@ -155,9 +155,9 @@ class Tree_Generator():
                             move['remove'] = combi
                             child_state2.update(move, 0)
                             price -= len(combi)
-                            tree.addChild(Tree.Tree(child_state2, move, price))
+                            tree.addChild(Tree.Tree(child_state2, price, move))
                     else:
-                        tree.addChild(Tree.Tree(child_state2, move, price))
+                        tree.addChild(Tree.Tree(child_state2, price, move))
 
     def generate_tree(self, state):
         t0 = Tree.Tree(state, 0, [])
