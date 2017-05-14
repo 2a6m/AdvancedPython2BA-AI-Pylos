@@ -5,7 +5,7 @@ import json
 class Tree():
     def __init__(self, state, delta, move, children=[]):
         self.__value = (state, move, delta)
-        self.__children = copy.deepcopy(children)
+        self.__children = copy.copy(children)
 
     def __getitem__(self, index):
         return self.__children[index]
@@ -31,7 +31,7 @@ class Tree():
 
     @property
     def children(self):
-        return copy.deepcopy(self.__children)
+        return copy.copy(self.__children)
 
     @property
     def size(self):
