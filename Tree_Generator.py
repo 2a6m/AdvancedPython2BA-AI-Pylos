@@ -139,6 +139,10 @@ class Tree_Generator():
             child_state1 = copy.deepcopy(pyl.PylosState(state._state['visible']))
             transitory_state = copy.deepcopy(pyl.PylosState(state._state['visible']))
             move = {'move': 'move', 'from': list(pos)}
+            print(state)
+            print(self.board_remove(state))
+            print(pos)
+            print(child_state1._state['visible'])
             transitory_state.remove(pos, child_state1._state['visible']['turn'])
             for upperpos in self.board_free(transitory_state):
                 child_state2 = copy.deepcopy(pyl.PylosState(child_state1._state['visible']))
@@ -160,14 +164,19 @@ class Tree_Generator():
         t0 = Tree.Tree(state, 0, [])
         print("t0i = ", t0)
         self.generate_from_free(t0, state)
-        self.generate_from_remove(t0, state)
+        #self.generate_from_remove(t0, state)
         print("t0f = ", t0)
-        for child in t0.children:
-            print(child.state)
-            print(type(child.state))
-            self.generate_from_free(child, child.state)
-            self.generate_from_remove(child, child.state)
-        t0.saveTree("TEST.json")
+        t = t0
+        # il ne fait qu'un seul branchage
+        while len(t.children) != 0:
+            for child in t.children:
+                print(child.state)
+                print(type(child.state))
+                self.generate_from_free(child, child.state)
+                #self.generate_from_remove(child, child.state)
+                t = child
+            t0.saveTree("TEST.json")
+            # il ne fait qu'un seul branchage
         print("arbre générée")
 
 
