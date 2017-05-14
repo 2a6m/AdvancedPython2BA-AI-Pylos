@@ -1,6 +1,9 @@
 from lib import game
 import json
 import copy
+import os.path
+import Tree
+import Tree_Generator as TG
 
 class AI():
     '''Class representing a AI for the Pylos game.'''
@@ -10,9 +13,12 @@ class AI():
         # Dico ou liste ?? meilleur pour un arbre ??
         self.__origin_state = state
         self._state = self.reset_state() # state qu'on peut modifier
-        self._AIplayer = player
-        self._player = self._AIplayer
+        self.__player = player
 
+    @property
+    def player(self):
+        return self.__player
+    """
     def reset_state(self):
         return copy.deepcopy(self.__origin_state)
 
@@ -177,3 +183,46 @@ class AI():
                 if self._moves[moves][0][0] > place[0]:  # si upperlayer alors on le choisit
                     move, price, place = moves, self._moves[moves][1], self._moves[moves][0]
         return move
+
+    """
+
+    def loadTree(self, state):
+        '''
+        look if there is a tree or a tree update
+
+        :return: first, tree update; second, tree of the all game
+        '''
+        tree_file = 'TEST'
+        game_tree_file = 'GAME_TREE'
+        if os.path.isfile(game_tree_file):
+            tree = Tree.dico2t(game_tree_file)
+        elif os.path.isfile(tree_file):
+            tree = Tree.dico2t(json.load(tree_file))
+        else:
+            tree = TG.Tree_Generator.generate_tree(state)
+        return tree
+
+    def choose(self, matrix):
+        '''
+        Look at the end of the trees and calculated the percentage of victory
+
+        :param matrix:
+        :return: choose the move with best percentage
+        '''
+        mean = []
+        for i in matrix:
+            for j in matrix:
+                m_elem = (matrix[i][j].endState(self.player), matrix[i][j]['move'])
+                mean.append(m_elem)
+        value = -5
+        move = ''
+        for elem in mean:
+            if elem[0] > value:
+                value = elem[0]
+                move = elem[1]
+        return move
+
+    def search(self, state):
+        tree = self.loadTree(state)
+        possibilities = tree.find(state)
+        return self.choose(possibilities)
