@@ -93,7 +93,7 @@ class Tree_Generator():
             for row in range(4-layer):
                 for column in range(4-layer):
                     try:
-                        state.remove((layer, row, column), 0)
+                        state.remove((layer, row, column), state._state['visible']['turn'])
                         # self._player or self._playernb
                         board.append((layer, row, column))
                     except:
@@ -163,9 +163,11 @@ class Tree_Generator():
         self.generate_from_remove(t0, state)
         print("t0f = ", t0)
         for child in t0.children:
-            self.generate_from_free(child, state)
-            self.generate_from_remove(child, state)
-        t0.saveTree("TEST.txt")
+            print(child.state)
+            print(type(child.state))
+            self.generate_from_free(child, child.state)
+            self.generate_from_remove(child, child.state)
+        t0.saveTree("TEST.json")
         print("arbre générée")
 
 
