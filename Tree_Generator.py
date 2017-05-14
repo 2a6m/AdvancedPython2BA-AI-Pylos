@@ -116,19 +116,26 @@ class Tree_Generator():
 
     def generate_from_free(self, tree, state):
         # Case where the AI places a marble
+        safe_state = pyl.PylosState(state._state['visible'])
         for pos in self.board_free(state):
             price = 1
-            child_state = pyl.PylosState(state)
+            child_state1 = pyl.PylosState(state._state['visible'])
+            print('iSTATE ', '  ', state._state['visible'])
+            print('iCSTATE', '  ', child_state1._state['visible'])
             move = {'move': 'place', 'to': list(pos)}
-            child_state.update(move, 0)
-            if child_state.createSquare(pos):
-                for combi in self.square_remove(child_state):
+            if child_state1.createSquare(pos):
+                print('SQUARE')
+                for combi in self.square_remove(child_state1):
+                    child_state2 = pyl.PylosState(child_state1)
                     move['remove'] = combi
-                    child_state.update(move, 0)
+                    child_state2.update(move, 0)
                     price -= len(combi)
-                    tree.addChild(Tree.Tree(child_state, move, price))
+                    tree.addChild(Tree.Tree(child_state2, move, price))
             else:
-                tree.addChild(Tree.Tree(child_state, move, price))
+                child_state1.update(move, 0)
+                print('fSTATE ', '  ', state._state['visible'])
+                print('fCSTATE', '  ', child_state1._state['visible'])
+                tree.addChild(Tree.Tree(child_state1, move, price))
 
     def generate_from_remove(self, tree, state):
         # Case where the AI deplaces an existing marble
