@@ -116,6 +116,7 @@ class Tree_Generator():
 
     def generate_from_free(self, tree, state):
         # Case where the AI places a marble
+        children = []
         for pos in self.board_free(state):
             price = 1
             child_state1 = copy.deepcopy(pyl.PylosState(state._state['visible']))
@@ -127,10 +128,11 @@ class Tree_Generator():
                     move['remove'] = combi
                     child_state2.update(move, child_state2._state['visible']['turn'])
                     price -= len(combi)
-                    tree.addChild(Tree.Tree(child_state2, price, move))
+                    children.append(Tree.Tree(child_state2, price, move))
             else:
                 child_state1.update(move, child_state1._state['visible']['turn'])
-                tree.addChild(Tree.Tree(child_state1, price, move))
+                children.append(Tree.Tree(child_state1, price, move))
+        return children
 
     def generate_from_remove(self, tree, state):
         # Case where the AI deplaces an existing marble
@@ -159,26 +161,44 @@ class Tree_Generator():
                     else:
                         tree.addChild(Tree.Tree(child_state2, price, move))
 
-    def generate_tree(self, state):
-        print(state)
+# Generate a Tree
+    def start(self, state):
         t0 = Tree.Tree(state, 0, [])
-        print("t0i = ", t0)
-        self.generate_from_free(t0, state)
+        self.generate_tree(t0)
+        t0.saveTree("TEST.json")
+        print('arbre sauvé')
+
+    def generate_tree(self, tree, it=0, gen=0):
+        children = self.generate_from_free(tree, tree.state)
         #self.generate_from_remove(t0, state)
-        print("t0f = ", t0)
-        t = t0
+        if it >= 1:
+            pass
+        else:
+            it += 1
+            for child in children:
+                gen += 1
+                tree.addChild(child)
+                self.generate_tree(child, it, gen)
+        #print("t0f = ", tree)
+        '''
+        t = tree
         # il ne fait qu'un seul branchage
-        while len(t.children) != 0:
+        if len(t.children) == 0:
+            return
+        else:
             for child in t.children:
                 print(child.state)
                 print(type(child.state))
-                self.generate_from_free(child, child.state)
-                #self.generate_from_remove(child, child.state)
-                t = child
-            t0.saveTree("TEST.json")
+                children = self.generate_from_free(child, child.state)
+                # self.generate_from_remove(child, child.state)
+                for ch in children:
+                    tree.addChild(ch)
+                    self.generate_tree(ch)
             # il ne fait qu'un seul branchage
-        print("arbre générée")
+        '''
+        print(it, gen, sep=' : ')
+        return
 
 
 test = Tree_Generator()
-test.generate_tree(pyl.PylosState())
+test.start(pyl.PylosState())
