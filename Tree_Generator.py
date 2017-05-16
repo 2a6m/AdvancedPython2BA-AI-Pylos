@@ -161,6 +161,31 @@ class Tree_Generator():
                     else:
                         tree.addChild(Tree.Tree(child_state2, price, move))
 
+# test symetry
+
+    def rot(self, matrix):
+        for i in range(len(matrix)):
+            for j in range(i):
+                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+        return matrix
+
+    def axisY(self, matrix):
+        for i in range(len(matrix)):
+            matrix[i].reverse()
+        return matrix
+
+    def axisX(self, matrix):
+        matrix.reverse()
+        return matrix
+
+    def noSymetry(self, matrix1, matrix2):
+        if matrix1 == self.rot(copy.deepcopy(matrix2)) or \
+                        matrix1 == self.axisY(copy.deepcopy(matrix2)) or \
+                        matrix1 == self.axisX(copy.deepcopy(matrix2)) or \
+                        matrix1 == self.axisX(self.axisY(copy.deepcopy(matrix2))):
+            raise EnvironmentError
+
+
 # Generate a Tree
     def start(self, state):
         t0 = Tree.Tree(state, 0, [])
@@ -171,16 +196,34 @@ class Tree_Generator():
     def generate_tree(self, tree, it=0, gen=0):
         children = self.generate_from_free(tree, tree.state)
         #self.generate_from_remove(t0, state)
-        if it >= 1:
+        if it >= 3:
             pass
         else:
             it += 1
             for child in children:
-                gen += 1
-                tree.addChild(child)
-                self.generate_tree(child, it, gen)
+                if len(tree.children) == 0:
+                    gen += 1
+                    tree.addChild(child)
+                    self.generate_tree(child, it, gen)
+                else:
+                    try:
+                        for ch in tree.children:
+                            m1 = child.state._state['visible']['board'][0]
+                            m2 = ch.state._state['visible']['board'][0]
+                            print('m1', m1)
+                            print('m2', m2)
+                            self.noSymetry(m1, m2)
+                        gen += 1
+                        tree.addChild(child)
+                        self.generate_tree(child, it, gen)
+                    except:
+                        print('symetry')
+                        pass
+
         #print("t0f = ", tree)
-        '''
+        print(it, gen, sep=' : ')
+        return
+'''
         t = tree
         # il ne fait qu'un seul branchage
         if len(t.children) == 0:
@@ -195,10 +238,7 @@ class Tree_Generator():
                     tree.addChild(ch)
                     self.generate_tree(ch)
             # il ne fait qu'un seul branchage
-        '''
-        print(it, gen, sep=' : ')
-        return
-
+'''
 
 test = Tree_Generator()
 test.start(pyl.PylosState())
