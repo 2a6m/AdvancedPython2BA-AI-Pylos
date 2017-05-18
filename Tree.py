@@ -71,6 +71,16 @@ class Tree():
             lst.append(child.find(state))
         return lst
 
+    def endTree(self):
+        children = []
+        if len(self.children) == 0:
+            return self
+        else:
+            for child in self.children:
+                print('HELP', type(child.state))
+                children += [child.endTree()]
+        return children
+
     def endState(self, player):
         '''
         calculate the percentage of winning at the end of the tree

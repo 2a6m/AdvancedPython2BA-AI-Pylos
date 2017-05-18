@@ -181,6 +181,8 @@ class Tree_Generator():
 
     def noSymetry(self, matrix1, matrix2):
         if matrix1 == self.rot(copy.deepcopy(matrix2)) or \
+                        matrix1 == self.rot(self.rot(copy.deepcopy(matrix2))) or \
+                        matrix1 == self.rot(self.rot(self.rot(copy.deepcopy(matrix2)))) or \
                         matrix1 == self.axisY(copy.deepcopy(matrix2)) or \
                         matrix1 == self.axisX(copy.deepcopy(matrix2)) or \
                         matrix1 == self.axisX(self.axisY(copy.deepcopy(matrix2))):
@@ -197,7 +199,7 @@ class Tree_Generator():
     def generate_tree(self, tree, it=0, gen=0):
         # children = self.generate_from_free(tree, tree.state)
         children =  self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
-        if it >= 4:
+        if it >= 4: # mettre 4 poir le 1er tour mais 3 pour la suite du jeu
             pass
         else:
             it += 1
@@ -222,6 +224,13 @@ class Tree_Generator():
         #print("t0f = ", tree)
         print(it, gen, sep=' : ')
         return
+
+    def loadTree(self, file):
+        with open(file) as f:
+            tree = Tree.dico2t(json.load(f))
+        return tree
+
+
 '''
         t = tree
         # il ne fait qu'un seul branchage
@@ -241,3 +250,35 @@ class Tree_Generator():
 
 test = Tree_Generator()
 test.start(pyl.PylosState())
+
+state_test = pyl.PylosState({'board': [[[0, 1, None, None],[1, 0, None, None ], [None, None, None, None],
+                                                [None, None, None, None]], [[0, None, None], [None, None, None],
+                                                                            [None, None, None]],[[None, None],[None, None]],
+                                               [[None]]],'reserve': [12, 13],'turn': 1})
+
+
+print(state_test)
+tree = test.loadTree('TEST.json')
+print('tree loaded')
+a = tree.find(state_test)
+if len(a) == 1:
+    tree = a[0]
+    print(tree.endTree())
+    for end in tree.endTree():
+        for e in end:
+            print(e)
+            print('type state', type(e.state))
+            print('type', type(e))
+            test.generate_tree(e)
+    tree.saveTree('TEST3,5.json')
+    print('tree saved')
+else:
+    tree = Tree.Tree(state_test,
+                     state_test._state['visible']['reserve'][0] - state_test._state['visible']['reserve'][1], [])
+    test.generate_tree(tree)
+tree.saveTree('TEST3,5.json')
+
+
+tree = test.loadTree('Test 3,5.json')
+a = tree.find(state_test)
+print(a)
