@@ -93,8 +93,10 @@ class Tree_Generator():
             for row in range(4-layer):
                 for column in range(4-layer):
                     try:
-                        state.remove((layer, row, column), state._state['visible']['turn'])
-                        # self._player or self._playernb
+                        state.canMove(layer, row, column)
+                        sphere = state.get(layer, row, column)
+                        if sphere != state._state['visible']['turn']:
+                            raise game.InvalidMoveException('not your sphere')
                         board.append((layer, row, column))
                     except:
                         pass
@@ -136,15 +138,12 @@ class Tree_Generator():
 
     def generate_from_remove(self, tree, state):
         # Case where the AI deplaces an existing marble
+        children = []
         for pos in self.board_remove(state):
             price = 0
             child_state1 = copy.deepcopy(pyl.PylosState(state._state['visible']))
             transitory_state = copy.deepcopy(pyl.PylosState(state._state['visible']))
             move = {'move': 'move', 'from': list(pos)}
-            print(state)
-            print(self.board_remove(state))
-            print(pos)
-            print(child_state1._state['visible'])
             transitory_state.remove(pos, child_state1._state['visible']['turn'])
             for upperpos in self.board_free(transitory_state):
                 child_state2 = copy.deepcopy(pyl.PylosState(child_state1._state['visible']))
@@ -153,13 +152,15 @@ class Tree_Generator():
                     print(upperpos)
                     child_state2.update(move, child_state2._state['visible']['turn'])
                     if child_state2.createSquare(pos):
+                        print('SQUARE')
                         for combi in self.square_remove(child_state2):
                             move['remove'] = combi
                             child_state2.update(move, child_state2._state['visible']['turn'])
                             price -= len(combi)
-                            tree.addChild(Tree.Tree(child_state2, price, move))
+                            children.append(Tree.Tree(child_state2, price, move))
                     else:
-                        tree.addChild(Tree.Tree(child_state2, price, move))
+                        children.append(Tree.Tree(child_state2, price, move))
+        return children
 
 # test symetry
 
@@ -194,9 +195,9 @@ class Tree_Generator():
         print('arbre sauvé')
 
     def generate_tree(self, tree, it=0, gen=0):
-        children = self.generate_from_free(tree, tree.state)
-        #self.generate_from_remove(t0, state)
-        if it >= 3:
+        # children = self.generate_from_free(tree, tree.state)
+        children =  self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
+        if it >= 4:
             pass
         else:
             it += 1
@@ -210,8 +211,6 @@ class Tree_Generator():
                         for ch in tree.children:
                             m1 = child.state._state['visible']['board'][0]
                             m2 = ch.state._state['visible']['board'][0]
-                            print('m1', m1)
-                            print('m2', m2)
                             self.noSymetry(m1, m2)
                         gen += 1
                         tree.addChild(child)
