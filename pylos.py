@@ -232,8 +232,6 @@ class PylosClient(game.GameClient):
         tree = play.start(state)
         moves = []
         for child in tree:
-            print('Test1', type(child))
-            print('Test2', child.delta)
             moves.append((child.endDelta(), child.move))
         move = self.choose(moves, state)
         return move

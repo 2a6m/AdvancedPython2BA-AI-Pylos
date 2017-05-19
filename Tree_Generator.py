@@ -100,7 +100,6 @@ class Tree_Generator():
                 child_state2 = copy.deepcopy(pyl.PylosState(child_state1._state['visible']))
                 if upperpos[0] > pos[0]:
                     move['to'] = list(upperpos)
-                    print(upperpos)
                     child_state2.update(move, child_state2._state['visible']['turn'])
                     if child_state2.createSquare(pos):
                         print('SQUARE')

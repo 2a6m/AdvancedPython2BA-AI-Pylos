@@ -63,27 +63,17 @@ class Tree():
             return self
         else:
             for child in self.children:
-                print('HELP', type(child.state))
                 children += [child.endTree()]
         return children
 
     def endDelta(self):
         tot = 0
         if len(self.children) == 0:
-            print('self.delta')
-            print(self.delta)
-            print(type(self.delta))
-            print('\n')
             tot = self.delta
             return tot
         else:
             for child in self.children:
-                print('help')
-                print(type(child))
-                print(child.delta)
-                print(type(child.endDelta()))
                 tot += child.endDelta()
-        print(tot/len(self.children))
         return tot / len(self.children)
 
 
