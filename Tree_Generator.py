@@ -33,7 +33,7 @@ class Tree_Generator():
                         pass
         return board
 
-    def board_remove(self, state):
+    def board_remove(self, state, player):
         '''
         travel the board and save all the marbles that can be removed
 
@@ -46,7 +46,7 @@ class Tree_Generator():
                     try:
                         state.canMove(layer, row, column)
                         sphere = state.get(layer, row, column)
-                        if sphere != state._state['visible']['turn']:
+                        if sphere != player:
                             raise game.InvalidMoveException('not your sphere')
                         board.append((layer, row, column))
                     except:
@@ -58,7 +58,7 @@ class Tree_Generator():
         :param state:
         :return: List of all the possible combinations of marbles the AI can remove after it has created a square
         """
-        data = self.board_remove(state)
+        data = self.board_remove(state, state._state['visible']['turn'])
         ans = []
         for i in range(len(data)):
             combi = [data[i]]
@@ -74,23 +74,27 @@ class Tree_Generator():
             price = 1
             child_state1 = copy.deepcopy(pyl.PylosState(state._state['visible']))
             move = {'move': 'place', 'to': list(pos)}
+            child_state1.update(move, state._state['visible']['turn'])
             if child_state1.createSquare(pos):
-                print('SQUARE')
-                for combi in self.square_remove(child_state1):
-                    child_state2 = copy.deepcopy(pyl.PylosState(child_state1))
+                combi = self.board_remove(child_state1, state._state['visible']['turn'])
+                child_state2 = copy.deepcopy(pyl.PylosState(state._state['visible']))
+                if len(combi) >= 2:
+                    move['remove'] = [combi[0], combi[1]]
+                else:
                     move['remove'] = combi
-                    child_state2.update(move, child_state2._state['visible']['turn'])
-                    price -= len(combi)
-                    children.append(Tree.Tree(child_state2, price, move))
+                child_state2.update(move, child_state2._state['visible']['turn'])
+                price -= len(combi)
+                children.append(Tree.Tree(child_state2, price, move))
             else:
-                child_state1.update(move, child_state1._state['visible']['turn'])
-                children.append(Tree.Tree(child_state1, price, move))
+                child_state = copy.deepcopy(pyl.PylosState(state._state['visible']))
+                child_state.update(move, child_state._state['visible']['turn'])
+                children.append(Tree.Tree(child_state, price, move))
         return children
 
     def generate_from_remove(self, tree, state):
         # Case where the AI deplaces an existing marble
         children = []
-        for pos in self.board_remove(state):
+        for pos in self.board_remove(state, state._state['visible']['turn']):
             price = 0
             child_state1 = copy.deepcopy(pyl.PylosState(state._state['visible']))
             transitory_state = copy.deepcopy(pyl.PylosState(state._state['visible']))
@@ -102,12 +106,15 @@ class Tree_Generator():
                     move['to'] = list(upperpos)
                     child_state2.update(move, child_state2._state['visible']['turn'])
                     if child_state2.createSquare(pos):
-                        print('SQUARE')
-                        for combi in self.square_remove(child_state2):
+                        combi = self.board_remove(child_state1, state._state['visible']['turn'])
+                        child_state3 = copy.deepcopy(pyl.PylosState(state._state['visible']))
+                        if len(combi) >= 2:
+                            move['remove'] = [combi[0], combi[1]]
+                        else:
                             move['remove'] = combi
-                            child_state2.update(move, child_state2._state['visible']['turn'])
-                            price -= len(combi)
-                            children.append(Tree.Tree(child_state2, price, move))
+                        child_state3.update(move, child_state3._state['visible']['turn'])
+                        price -= len(combi)
+                        children.append(Tree.Tree(child_state3, price, move))
                     else:
                         children.append(Tree.Tree(child_state2, price, move))
         return children

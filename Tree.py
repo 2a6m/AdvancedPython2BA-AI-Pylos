@@ -31,8 +31,8 @@ class Tree():
 
     @property
     def Delta(self):
-        delta = self.state._state['visible']['reserve'][self.state._state['visible']['turn']] - \
-                self.state._state['visible']['reserve'][(self.state._state['visible']['turn'] + 1) % 2]
+        delta = self.state._state['visible']['reserve'][(self.state._state['visible']['turn'] + 1) % 2] - \
+                self.state._state['visible']['reserve'][self.state._state['visible']['turn']]
         return delta
 
     @property
