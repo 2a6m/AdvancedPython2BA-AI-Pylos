@@ -3,6 +3,7 @@ import json
 import copy
 import os.path
 import Tree
+import Tree_Generator as treegen
 
 class AI():
     '''Class representing a AI for the Pylos game.'''
@@ -12,177 +13,12 @@ class AI():
         # Dico ou liste ?? meilleur pour un arbre ??
         self.__origin_state = state
         self.__player = player
+        self._tree_generator = treegen.Tree_Generator()
+
 
     @property
     def player(self):
         return self.__player
-    """
-    def reset_state(self):
-        return copy.deepcopy(self.__origin_state)
-
-    def search(self):
-        '''
-        Protocol of the AI
-
-        :return: the move to the Client for _nextmove
-        '''
-        #print('Player', self._AIplayer)
-        count = 1   # pour prévoir jusqu'à un certain niveau
-        price = 1
-        board_free = self.board_free()
-        #print('board free', board_free)
-        for place in board_free: # regarde tout les emplacements vides et valides (list)
-            #print('place', place)
-            move = {'move': 'place', 'to': list(place)}
-            # self._moves[json.dumps(move)] = (place, price)
-            #print('test2 state', self._state)
-            self._state.update(json.loads(json.dumps(move)), self._player)  # on fait le mouvement pour regarder ce que ça fait
-            #print('test3 state', self._state)
-            # ERROR self._player doit correspondre à self.currentplayer ??
-            # selon type d'emplacement, on lui attribue une valeur (price move)
-            # on regarde quel type de mouvement c'est pour lui donner un prix
-            self.is_place_upperlayer(place)  # cas particulier , prix est le meme, juste check si c'est un layer au dessus
-            self.is_move_upperlayer(place)
-            self.is_place_square_r1(place)
-            self.is_place_square_r2(place)
-            self.is_move_square_r1(place)
-            self.is_move_square_r2(place)
-            self.is_place(place)
-            self._state = self.reset_state()  # reset du state pour essayer un autre mouvement
-            # counter va être fixe pour chaque couche de profondeur ??
-        #print('moves', self._moves)
-        move = self.choose()
-        #print('move choosen', move)
-        return move
-
-
-    def is_place_upperlayer(self, place):
-        return
-
-    def is_move_upperlayer(self, place):
-        for balls in self.board_remove():
-            if balls[0] == int((place[0])-1):
-                price = 0
-                move = {'move': 'move', 'from': list(balls), 'to': list(place)}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def is_place_square_r1(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 1:
-                price = 0
-                move = {'move': 'place', 'to': list(place), 'remove': self.board_remove()[0]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def is_place_square_r2(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 2:
-                price = -1
-                # AI doit chercher quelles billes il va retirer
-                move = {'move': 'place', 'to': list(place), 'remove': [self.board_remove()[0], self.board_remove()[1]]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def is_move_square_r1(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 2:
-                price = -1
-                # AI doit chercher quelles billes il va retirer
-                move = {'move': 'move', 'from': self.board_remove()[0], 'to': list(place), 'remove': [self.board_remove()[1], self.board_remove()[2]]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def is_move_square_r2(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 3:
-                price = -2
-                # AI doit chercher quelles billes il va retirer
-                move = {'move': 'move', 'from': self.board_remove()[0], 'to': list(place), 'remove': [self.board_remove()[1], self.board_remove()[2]]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def is_place(self, place):
-        price = 1
-        move = {'move': 'place', 'to': list(place)}
-        self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def board_free(self):
-        '''
-        travel the board and save all the free places in a list
-
-        :return: the list of the free places
-        '''
-        board = list()
-        for layer in range(4):
-            for row in range(4-layer):
-                for column in range(4-layer):
-                    try:
-                        self._state.validPosition(layer, row, column)
-                        if self._state.get(layer, row, column) is None:
-                            board.append((layer, row, column))
-                    except:
-                        pass
-        return board
-
-    def board_remove(self):
-        '''
-        travel the board and save all the pieces we can move
-
-        :return: the list of the pieces we can move
-        '''
-        board = list()
-        for layer in range(4):
-            for row in range(4-layer):
-                for column in range(4-layer):
-                    try:
-                        self._state.remove((layer, row, column), self._player)
-                        # self._player or self._playernb
-                        board.append((layer, row, column))
-                    except:
-                        pass
-        return board
-
-    def switch_player(self):
-        '''
-        Switch the player to see furthers moves
-
-        :return: nothing
-        '''
-        self._player = (self._player + 1) % int(game.GameServer.nbplayers)
-        return
-
-    def price_tot(self, price2, price1=0):
-        '''
-        Sum the prices of the consecutives moves
-
-        :param price2: price of the second move
-        :param price1: price of the first move (0 if stage 1)
-        :return: the total price
-        '''
-        if self._player == self._AIplayer:
-            price1 += price2
-        else:
-            price1 -= price2
-        return price1
-
-    def choose(self):
-        '''
-        Choose the 'best' move of all the possible moves
-
-        :return: the 'best' move
-        '''
-        move, price, place = '', 10, tuple()
-        for moves in self._moves:
-            if self._moves[moves][1] < price:
-                move, price, place = moves, self._moves[moves][1], self._moves[moves][0]
-            elif self._moves[moves][1] == price:
-                if self._moves[moves][0][0] > place[0]:  # si upperlayer alors on le choisit
-                    move, price, place = moves, self._moves[moves][1], self._moves[moves][0]
-        return move
-
-    """
 
     def loadTree(self, state):
         '''
@@ -230,3 +66,50 @@ class AI():
         tree = self.loadTree(state)
         possibilities = tree.find(state)
         return self.choose(possibilities)
+
+    def scan_for_best_move(self, tree):
+        '''
+        Scan trough the given tree and evaluates de cost at each terminal move as the enemy always plays
+        the best one for him.
+        :param tree:
+        :return: list of the best possible move of equivalent price the AI can play from the given tree (type = list of
+        "Tree" objects)
+        '''
+        reserve = tree.state._state['visible']['reserve']
+        turn = tree.state._state['visible']['turn']
+        best_price = -2
+        best_move = []
+        for case in self.get_latest_children(tree):
+            score = reserve[turn] - case.state._state['visible']['reserve'][turn] - reserve[(turn+1)%2] + \
+            case.state._state['visible']['reserve'][(turn+1)%2]
+            if score > best_price:
+                best_price = score
+                best_move = [copy.deepcopy(case)]
+            elif score == best_price:
+                best_move.append[copy.deepcopy(case)]
+        print("Best_move price is: ", best_price)
+        return best_move
+
+    def get_latest_children(self, tree):
+        '''
+        :param tree:
+        :return: list of all the last child_tree's generated from the tree in parameter (type = list of "Tree" objects)
+        NOTE: This function should rather be included in the "Tree" module...
+        '''
+        ans = []
+        for child_tree in tree.children:
+            if len(child_tree.children) == 0:
+                ans.append(copy.deepcopy(child_tree))
+            else:
+                ans + self.get_latest_children(child_tree)
+        return ans
+
+    def extract_state_from_tree_list(self, tree_list):
+        '''
+        :param tree_list:
+        :return: (type = list of "PylosState" object)
+        '''
+        ans = []
+        for tree in tree_list:
+            ans.append(copy.deepcopy(tree.state))
+        return ans
