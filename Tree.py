@@ -74,9 +74,14 @@ class Tree():
             print(self.delta)
             print(type(self.delta))
             print('\n')
-            return self.delta
+            tot = self.delta
+            return tot
         else:
             for child in self.children:
+                print('help')
+                print(type(child))
+                print(child.delta)
+                print(type(child.endDelta()))
                 tot += child.endDelta()
         print(tot/len(self.children))
         return tot / len(self.children)

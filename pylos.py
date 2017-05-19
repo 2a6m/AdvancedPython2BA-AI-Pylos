@@ -231,11 +231,10 @@ class PylosClient(game.GameClient):
         play = TG.Tree_Generator()
         tree = play.start(state)
         moves = []
-        print(tree)
         for child in tree:
-            print(type(child))
-            print(child.delta)
-            moves.append((child.endDelta, child.move))
+            print('Test1', type(child))
+            print('Test2', child.delta)
+            moves.append((child.endDelta(), child.move))
         move = self.choose(moves, state)
         return move
 
@@ -247,7 +246,7 @@ class PylosClient(game.GameClient):
             print(m)
             if m[0] > delta:
                 delta, move = m
-        return move
+        return json.dumps(move)
 
 
 
