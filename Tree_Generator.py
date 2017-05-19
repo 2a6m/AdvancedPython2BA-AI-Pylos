@@ -115,21 +115,42 @@ class Tree_Generator():
 # test symetry
 
     def rot(self, matrix):
+        '''
+
+        :param matrix:
+        :return: matrix rotated
+        '''
         for i in range(len(matrix)):
             for j in range(i):
                 matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
         return matrix
 
     def axisY(self, matrix):
+        '''
+
+        :param matrix:
+        :return: matrix with axial symetry
+        '''
         for i in range(len(matrix)):
             matrix[i].reverse()
         return matrix
 
     def axisX(self, matrix):
+        '''
+
+        :param matrix:
+        :return: matrix with axial symetry
+        '''
         matrix.reverse()
         return matrix
 
     def noSymetry(self, matrix1, matrix2):
+        '''
+
+        :param matrix1: matrix
+        :param matrix2: matrix
+        :return: raise error if matrix2 is symetry of matrix1
+        '''
         if matrix1 == self.rot(copy.deepcopy(matrix2)) or \
                         matrix1 == self.rot(self.rot(copy.deepcopy(matrix2))) or \
                         matrix1 == self.rot(self.rot(self.rot(copy.deepcopy(matrix2)))) or \
@@ -141,17 +162,29 @@ class Tree_Generator():
 
 # Generate a Tree
     def start(self, state):
+        '''
+        create a node
+
+        :param state: state of the game
+        :return: node of the state given in paramter
+        '''
         print('search tree')
         t0 = Tree.Tree(state, 0, [])
         tree = self.generate_tree(t0)
         print('tree generated')
         return tree
 
-
     def generate_tree(self, tree, it=0, gen=0):
-        # children = self.generate_from_free(tree, tree.state)
+        '''
+        generate a tree
+
+        :param tree:  node create by start
+        :param it: use for recursivity
+        :param gen: use for recursivity
+        :return: tree of the node
+        '''
         children = self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
-        if it >= 3: # mettre 4 poir le 1er tour mais 3 pour la suite du jeu
+        if it >= 3:
             pass
         else:
             it += 1

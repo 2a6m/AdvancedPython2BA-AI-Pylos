@@ -33,7 +33,6 @@ class Tree():
     def Delta(self):
         delta = self.state._state['visible']['reserve'][self.state._state['visible']['turn']] - \
                 self.state._state['visible']['reserve'][(self.state._state['visible']['turn'] + 1) % 2]
-        print(delta)
         return delta
 
     @property
@@ -74,6 +73,11 @@ class Tree():
         return children
 
     def endDelta(self):
+        '''
+        mean of delta at the end of a tree
+
+        :return: float, mean
+        '''
         tot = 0
         if len(self.children) == 0:
             tot = self.Delta

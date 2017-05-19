@@ -241,7 +241,6 @@ class PylosClient(game.GameClient):
         delta = -10
         move = play.board_free(state)[0]
         for m in moves:
-            print(m)
             if m[0] > delta:
                 delta, move = m
         return json.dumps(move)
