@@ -3,8 +3,8 @@ import json
 
 
 class Tree():
-    def __init__(self, state, delta, move, children=[]):
-        self.__value = (state, move, delta)
+    def __init__(self, state, price, move, children=[]):
+        self.__value = (state, move, price)
         self.__children = copy.copy(children)
 
     def __getitem__(self, index):
@@ -28,6 +28,13 @@ class Tree():
     @property
     def delta(self):
         return self.__value[2]
+
+    @property
+    def Delta(self):
+        delta = self.state._state['visible']['reserve'][self.state._state['visible']['turn']] - \
+                self.state._state['visible']['reserve'][(self.state._state['visible']['turn'] + 1) % 2]
+        print(delta)
+        return delta
 
     @property
     def children(self):
@@ -69,7 +76,7 @@ class Tree():
     def endDelta(self):
         tot = 0
         if len(self.children) == 0:
-            tot = self.delta
+            tot = self.Delta
             return tot
         else:
             for child in self.children:

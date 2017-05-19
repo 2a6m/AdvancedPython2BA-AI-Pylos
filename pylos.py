@@ -238,7 +238,7 @@ class PylosClient(game.GameClient):
 
     def choose(self, moves, state):
         play = TG.Tree_Generator()
-        delta = -5
+        delta = -10
         move = play.board_free(state)[0]
         for m in moves:
             print(m)

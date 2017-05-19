@@ -141,6 +141,7 @@ class Tree_Generator():
 
 # Generate a Tree
     def start(self, state):
+        print('search tree')
         t0 = Tree.Tree(state, 0, [])
         tree = self.generate_tree(t0)
         print('tree generated')
