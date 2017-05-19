@@ -4,65 +4,16 @@ import copy
 import Tree
 import pylos as pyl
 
+
+class NoSymetry(Exception):
+    def __init__(self):
+        pass
+
+
 class Tree_Generator():
     '''Creates the Tree chart for PylosAI'''
     def __init__(self):
         pass
-
-    """
-
-    def save_place_upperlayer(self, state, pos):
-        return
-
-    def save_move_upperlayer(self, state, pos):
-        for balls in self.board_remove():
-            if balls[0] == int((pos[0])-1):
-                price = 0
-                move = {'move': 'move', 'from': list(balls), 'to': list(pos)}
-        return move
-
-    def save_place_square_r1(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 1:
-                price = 0
-                move = {'move': 'place', 'to': list(place), 'remove': self.board_remove()[0]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def save_place_square_r2(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 2:
-                price = -1
-                # AI doit chercher quelles billes il va retirer
-                move = {'move': 'place', 'to': list(place), 'remove': [self.board_remove()[0], self.board_remove()[1]]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def save_move_square_r1(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 2:
-                price = -1
-                # AI doit chercher quelles billes il va retirer
-                move = {'move': 'move', 'from': self.board_remove()[0], 'to': list(place), 'remove': [self.board_remove()[1], self.board_remove()[2]]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def save_move_square_r2(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 3:
-                price = -2
-                # AI doit chercher quelles billes il va retirer
-                move = {'move': 'move', 'from': self.board_remove()[0], 'to': list(place), 'remove': [self.board_remove()[1], self.board_remove()[2]]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def save_place(self, pos):
-        price = 1
-        move = {'move': 'place', 'to': list(pos)}
-        return (price, move)
-
-    """
-
 
     def board_free(self, state):
         '''
@@ -186,20 +137,21 @@ class Tree_Generator():
                         matrix1 == self.axisY(copy.deepcopy(matrix2)) or \
                         matrix1 == self.axisX(copy.deepcopy(matrix2)) or \
                         matrix1 == self.axisX(self.axisY(copy.deepcopy(matrix2))):
-            raise EnvironmentError
+            raise NoSymetry
 
 
 # Generate a Tree
     def start(self, state):
         t0 = Tree.Tree(state, 0, [])
-        self.generate_tree(t0)
-        t0.saveTree("TEST.json")
-        print('arbre sauvé')
+        tree = self.generate_tree(t0)
+        print('tree generated')
+        return tree
+
 
     def generate_tree(self, tree, it=0, gen=0):
         # children = self.generate_from_free(tree, tree.state)
-        children =  self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
-        if it >= 4: # mettre 4 poir le 1er tour mais 3 pour la suite du jeu
+        children = self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
+        if it >= 3: # mettre 4 poir le 1er tour mais 3 pour la suite du jeu
             pass
         else:
             it += 1
@@ -218,67 +170,5 @@ class Tree_Generator():
                         tree.addChild(child)
                         self.generate_tree(child, it, gen)
                     except:
-                        print('symetry')
                         pass
-
-        #print("t0f = ", tree)
-        print(it, gen, sep=' : ')
-        return
-
-    def loadTree(self, file):
-        with open(file) as f:
-            tree = Tree.dico2t(json.load(f))
         return tree
-
-
-'''
-        t = tree
-        # il ne fait qu'un seul branchage
-        if len(t.children) == 0:
-            return
-        else:
-            for child in t.children:
-                print(child.state)
-                print(type(child.state))
-                children = self.generate_from_free(child, child.state)
-                # self.generate_from_remove(child, child.state)
-                for ch in children:
-                    tree.addChild(ch)
-                    self.generate_tree(ch)
-            # il ne fait qu'un seul branchage
-'''
-
-test = Tree_Generator()
-test.start(pyl.PylosState())
-
-state_test = pyl.PylosState({'board': [[[0, 1, None, None],[1, 0, None, None ], [None, None, None, None],
-                                                [None, None, None, None]], [[0, None, None], [None, None, None],
-                                                                            [None, None, None]],[[None, None],[None, None]],
-                                               [[None]]],'reserve': [12, 13],'turn': 1})
-
-
-print(state_test)
-tree = test.loadTree('TEST.json')
-print('tree loaded')
-a = tree.find(state_test)
-if len(a) == 1:
-    tree = a[0]
-    print(tree.endTree())
-    for end in tree.endTree():
-        for e in end:
-            print(e)
-            print('type state', type(e.state))
-            print('type', type(e))
-            test.generate_tree(e)
-    tree.saveTree('TEST3,5.json')
-    print('tree saved')
-else:
-    tree = Tree.Tree(state_test,
-                     state_test._state['visible']['reserve'][0] - state_test._state['visible']['reserve'][1], [])
-    test.generate_tree(tree)
-tree.saveTree('TEST3,5.json')
-
-
-tree = test.loadTree('Test 3,5.json')
-a = tree.find(state_test)
-print(a)

@@ -8,7 +8,7 @@ import argparse
 import socket
 import sys
 import json
-import PylosAI as AI
+import Tree_Generator as TG
 
 from lib import game
 
@@ -228,9 +228,27 @@ class PylosClient(game.GameClient):
         
         return it in JSON
         '''
-        print('client', state)
-        search = AI.AI(state, self._playernb)
-        return search.search()
+        play = TG.Tree_Generator()
+        tree = play.start(state)
+        moves = []
+        print(tree)
+        for child in tree:
+            print(type(child))
+            print(child.delta)
+            moves.append((child.endDelta, child.move))
+        move = self.choose(moves, state)
+        return move
+
+    def choose(self, moves, state):
+        play = TG.Tree_Generator()
+        delta = -5
+        move = play.board_free(state)[0]
+        for m in moves:
+            print(m)
+            if m[0] > delta:
+                delta, move = m
+        return move
+
 
 
 if __name__ == '__main__':

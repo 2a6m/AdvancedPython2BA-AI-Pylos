@@ -57,20 +57,6 @@ class Tree():
         self.__children.append(tree)
         return
 
-    def find(self, state, lst=[]):
-        '''
-        search a particuliar node (from the state) in the tree
-
-        :param state:
-        :param lst:
-        :return: the tree of the nodes in list
-        '''
-        if self.state == state._state['visible']:
-            lst.append(self.children)
-        for child in self.children:
-            lst.append(child.find(state))
-        return lst
-
     def endTree(self):
         children = []
         if len(self.children) == 0:
@@ -80,6 +66,21 @@ class Tree():
                 print('HELP', type(child.state))
                 children += [child.endTree()]
         return children
+
+    def endDelta(self):
+        tot = 0
+        if len(self.children) == 0:
+            print('self.delta')
+            print(self.delta)
+            print(type(self.delta))
+            print('\n')
+            return self.delta
+        else:
+            for child in self.children:
+                tot += child.endDelta()
+        print(tot/len(self.children))
+        return tot / len(self.children)
+
 
     def endState(self, player):
         '''
@@ -99,6 +100,4 @@ class Tree():
                 tot += child.endState(player)
         return tot / len(self.children)
 
-def dico2t(dico):
-    return Tree(dico['state'], dico['move'], dico['delta'], [dico2t(children) for children in dico['children']])
 
