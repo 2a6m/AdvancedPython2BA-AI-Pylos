@@ -123,23 +123,27 @@ class Tree_Generator():
             price = 1
             child_state1 = copy.deepcopy(pyl.PylosState(state._state['visible']))
             move = {'move': 'place', 'to': list(pos)}
+            child_state1.update(move, state._state['visible']['turn'])
             if child_state1.createSquare(pos):
-                print('SQUARE')
-                for combi in self.square_remove(child_state1):
-                    child_state2 = copy.deepcopy(pyl.PylosState(child_state1))
+                combi = self.board_remove(child_state1, state._state['visible']['turn'])
+                child_state2 = copy.deepcopy(pyl.PylosState(state._state['visible']))
+                if len(combi) >= 2:
+                    move['remove'] = [combi[0], combi[1]]
+                else:
                     move['remove'] = combi
-                    child_state2.update(move, child_state2._state['visible']['turn'])
-                    price -= len(combi)
-                    children.append(Tree.Tree(child_state2, price, move))
+                child_state2.update(move, child_state2._state['visible']['turn'])
+                price -= len(combi)
+                children.append(Tree.Tree(child_state2, price, move))
             else:
-                child_state1.update(move, child_state1._state['visible']['turn'])
-                children.append(Tree.Tree(child_state1, price, move))
+                child_state = copy.deepcopy(pyl.PylosState(state._state['visible']))
+                child_state.update(move, child_state._state['visible']['turn'])
+                children.append(Tree.Tree(child_state, price, move))
         return children
 
     def generate_from_remove(self, tree, state):
         # Case where the AI deplaces an existing marble
         children = []
-        for pos in self.board_remove(state):
+        for pos in self.board_remove(state, state._state['visible']['turn']):
             price = 0
             child_state1 = copy.deepcopy(pyl.PylosState(state._state['visible']))
             transitory_state = copy.deepcopy(pyl.PylosState(state._state['visible']))
@@ -149,15 +153,17 @@ class Tree_Generator():
                 child_state2 = copy.deepcopy(pyl.PylosState(child_state1._state['visible']))
                 if upperpos[0] > pos[0]:
                     move['to'] = list(upperpos)
-                    print(upperpos)
                     child_state2.update(move, child_state2._state['visible']['turn'])
                     if child_state2.createSquare(pos):
-                        print('SQUARE')
-                        for combi in self.square_remove(child_state2):
+                        combi = self.board_remove(child_state1, state._state['visible']['turn'])
+                        child_state3 = copy.deepcopy(pyl.PylosState(state._state['visible']))
+                        if len(combi) >= 2:
+                            move['remove'] = [combi[0], combi[1]]
+                        else:
                             move['remove'] = combi
-                            child_state2.update(move, child_state2._state['visible']['turn'])
-                            price -= len(combi)
-                            children.append(Tree.Tree(child_state2, price, move))
+                        child_state3.update(move, child_state3._state['visible']['turn'])
+                        price -= len(combi)
+                        children.append(Tree.Tree(child_state3, price, move))
                     else:
                         children.append(Tree.Tree(child_state2, price, move))
         return children
