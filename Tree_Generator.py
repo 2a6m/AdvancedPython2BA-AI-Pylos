@@ -124,6 +124,7 @@ class Tree_Generator():
             move = {'move': 'place', 'to': list(pos)}
             child_state1.update(move, state._state['visible']['turn'])
             if child_state1.createSquare(pos):
+                print('SQUARE')
                 combi = self.board_remove(child_state1, state._state['visible']['turn'])
                 child_state2 = copy.deepcopy(pyl.PylosState(state._state['visible']))
                 if len(combi) >= 2:
@@ -154,6 +155,7 @@ class Tree_Generator():
                     move['to'] = list(upperpos)
                     child_state2.update(move, child_state2._state['visible']['turn'])
                     if child_state2.createSquare(pos):
+                        print('SQUARE')
                         combi = self.board_remove(child_state1, state._state['visible']['turn'])
                         child_state3 = copy.deepcopy(pyl.PylosState(state._state['visible']))
                         if len(combi) >= 2:
@@ -223,11 +225,11 @@ class Tree_Generator():
                         tree.addChild(child)
                         self.generate_tree(child, it, gen)
                     except:
-                        print('symetry')
+                        # print('symetry')
                         pass
 
         #print("t0f = ", tree)
-        print(it, gen, sep=' : ')
+        #print(it, gen, sep=' : ')
         return
 
     def loadTree(self, file):
@@ -235,33 +237,16 @@ class Tree_Generator():
             tree = Tree.dico2t(json.load(f))
         return tree
 
-
-'''
-        t = tree
-        # il ne fait qu'un seul branchage
-        if len(t.children) == 0:
-            return
-        else:
-            for child in t.children:
-                print(child.state)
-                print(type(child.state))
-                children = self.generate_from_free(child, child.state)
-                # self.generate_from_remove(child, child.state)
-                for ch in children:
-                    tree.addChild(ch)
-                    self.generate_tree(ch)
-            # il ne fait qu'un seul branchage
-'''
+# TEST FIELD
 
 test = Tree_Generator()
-test.start(pyl.PylosState())
+state_test = pyl.PylosState({'board': [[[1, 1, 1, 1], [1, None, None, 1], [0, None, None, 0],[0, 0, 0, 0]],
+                                       [[None, None, None], [None, None, None],[None, None, None]],
+                                       [[None, None],[None, None]],
+                                       [[None]]],'reserve': [9, 9],'turn': 0})
+test.start(state_test)
 
-state_test = pyl.PylosState({'board': [[[0, 1, None, None],[1, 0, None, None ], [None, None, None, None],
-                                                [None, None, None, None]], [[0, None, None], [None, None, None],
-                                                                            [None, None, None]],[[None, None],[None, None]],
-                                               [[None]]],'reserve': [12, 13],'turn': 1})
-
-
+'''
 print(state_test)
 tree = test.loadTree('TEST.json')
 print('tree loaded')
@@ -287,3 +272,21 @@ tree.saveTree('TEST3,5.json')
 tree = test.loadTree('Test 3,5.json')
 a = tree.find(state_test)
 print(a)
+'''
+
+'''
+        t = tree
+        # il ne fait qu'un seul branchage
+        if len(t.children) == 0:
+            return
+        else:
+            for child in t.children:
+                print(child.state)
+                print(type(child.state))
+                children = self.generate_from_free(child, child.state)
+                # self.generate_from_remove(child, child.state)
+                for ch in children:
+                    tree.addChild(ch)
+                    self.generate_tree(ch)
+            # il ne fait qu'un seul branchage
+'''

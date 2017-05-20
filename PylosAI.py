@@ -3,7 +3,6 @@ import json
 import copy
 import os.path
 import Tree
-import Tree_Generator as treegen
 
 class AI():
     '''Class representing a AI for the Pylos game.'''
@@ -13,7 +12,6 @@ class AI():
         # Dico ou liste ?? meilleur pour un arbre ??
         self.__origin_state = state
         self.__player = player
-        self._tree_generator = treegen.Tree_Generator()
 
 
     @property
