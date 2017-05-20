@@ -124,7 +124,6 @@ class Tree_Generator():
             move = {'move': 'place', 'to': list(pos)}
             child_state1.update(move, state._state['visible']['turn'])
             if child_state1.createSquare(pos):
-                print('SQUARE')
                 combi = self.board_remove(child_state1, state._state['visible']['turn'])
                 child_state2 = copy.deepcopy(pyl.PylosState(state._state['visible']))
                 if len(combi) >= 2:
@@ -155,7 +154,6 @@ class Tree_Generator():
                     move['to'] = list(upperpos)
                     child_state2.update(move, child_state2._state['visible']['turn'])
                     if child_state2.createSquare(pos):
-                        print('SQUARE')
                         combi = self.board_remove(child_state1, state._state['visible']['turn'])
                         child_state3 = copy.deepcopy(pyl.PylosState(state._state['visible']))
                         if len(combi) >= 2:
@@ -194,7 +192,6 @@ class Tree_Generator():
                         matrix1 == self.axisX(copy.deepcopy(matrix2)) or \
                         matrix1 == self.axisX(self.axisY(copy.deepcopy(matrix2))):
             raise EnvironmentError
-
 
 # Generate a Tree
     def start(self, state):
