@@ -3,7 +3,7 @@ import json
 
 
 class Tree():
-    def __init__(self, state, delta, move, children=[]):
+    def __init__(self, state, delta=None, move=None, children=[]):
         self.__value = (state, move, delta)
         self.__children = copy.copy(children)
 
