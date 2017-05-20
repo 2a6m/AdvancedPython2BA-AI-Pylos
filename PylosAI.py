@@ -12,6 +12,7 @@ class AI():
         # Dico ou liste ?? meilleur pour un arbre ??
         self.__origin_state = state
         self.__player = player
+        self.strategies = [self.pickhighest(), self.picklowest()]
 
 
     @property
@@ -36,6 +37,12 @@ class AI():
             #y = Tree_Generator()
             #tree = Tree_Generator.generate_tree(state)
         return tree
+
+    def pickhighest(self, ref, val):
+        return val > ref
+
+    def picklowest(self, ref, val):
+        return val < ref
 
     def choose(self, matrix):
         '''
@@ -102,12 +109,26 @@ class AI():
                 ans + self.get_latest_children(child_tree)
         return ans
 
-    def extract_state_from_tree_list(self, tree_list):
-        '''
-        :param tree_list:
-        :return: (type = list of "PylosState" object)
-        '''
-        ans = []
-        for tree in tree_list:
-            ans.append(copy.deepcopy(tree.state))
-        return ans
+    def update_delta(self, tree):
+        pass
+
+    def calculate_price(self, i_res, f_res):
+        #The price is the number of marbles the first player placed mius the number of marbles the second player placed
+        return i_res[0] - f_res[0] - i_res[1] + f_res[1]
+
+    def recursiv_update(self, tree, i_res):
+        delta = tree.children[0].delta
+        for child in tree.children:
+            if len(child.children) == 0:
+                #Case where the child is an end-node:
+                price = self.calculate_price(i_res, child.state._state['visible']['reserve'])
+                child.delta = price
+            if child.delta != None:
+                turn = child.state._state['visible']['turn']
+                strategy = self.strategies[turn]
+                if strategy(delta, child.delta):
+                    delta = child.delta
+                tree.delta = delta
+            if child.delta == None:
+                self.recursive_update(child, i_res)
+
