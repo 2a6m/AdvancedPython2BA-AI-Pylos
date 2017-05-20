@@ -82,20 +82,19 @@ class Tree_Generator():
                         pass
         return board
 
-    def board_remove(self, state):
+    def board_remove(self, state, player):
         '''
         travel the board and save all the marbles that can be removed
-
         :return: list of removable marbles
         '''
         board = list()
         for layer in range(4):
-            for row in range(4-layer):
-                for column in range(4-layer):
+            for row in range(4 - layer):
+                for column in range(4 - layer):
                     try:
                         state.canMove(layer, row, column)
                         sphere = state.get(layer, row, column)
-                        if sphere != state._state['visible']['turn']:
+                        if sphere != player:
                             raise game.InvalidMoveException('not your sphere')
                         board.append((layer, row, column))
                     except:
@@ -204,8 +203,8 @@ class Tree_Generator():
 
     def generate_tree(self, tree, it=0, gen=0):
         # children = self.generate_from_free(tree, tree.state)
-        children =  self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
-        if it >= 4: # mettre 4 poir le 1er tour mais 3 pour la suite du jeu
+        children = self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
+        if it >= 4:# mettre 4 poir le 1er tour mais 3 pour la suite du jeu
             pass
         else:
             it += 1
