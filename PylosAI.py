@@ -25,14 +25,14 @@ class AI():
 
     def center(self, lst_moves):
         center_moves = [[0, 1, 1], [0, 1, 2], [0, 2, 1], [0, 2, 2]]
-        for move in lst_moves:
-            if move.move['to'] not in center_moves:
-                del lst_moves[move]
+        for tree in lst_moves:
+            if tree.move['to'] not in center_moves:
+                del lst_moves[tree]
 
     def transfert(self, lst_moves):
-        for move in lst_moves:
-            if 'from' not in move.move:
-                del lst_moves[move]
+        for tree in lst_moves:
+            if 'from' not in tree.move:
+                del lst_moves[tree]
 
 # --  --
     def loadTree(self, state):
