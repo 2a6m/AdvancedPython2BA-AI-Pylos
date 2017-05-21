@@ -13,7 +13,7 @@ class AI():
 
     @property
     def tree(self):
-        return self.__tree
+        return self._tree
 
 # -- Filters --
     def nothing(self, lst_moves):
@@ -51,7 +51,7 @@ class AI():
         return tree
 
     def get_next_move(self):
-        return self.apply_filters(self.search_best_moves).move
+        return self.apply_filters(self.search_best_moves()).move
 
     def search_best_moves(self):
         tree = self._tree
@@ -59,14 +59,19 @@ class AI():
         best_moves = []
         for child in tree.children:
             if child.delta == delta:
+                print(child.delta)
+                print(child)
                 best_moves.append(child)
                 #It isn't necessary to deepcopy the whole tree as we don't need its children anymore
+        print(best_moves)
         return best_moves
 
     def apply_filters(self, best_moves):
         """ATTENTION: IL FAUT ENCORE CREER UN ATTRIBUT ET DES FILTRES A LA CLASS AFIN QUE CETTE FONCTION SOIT COMPLETE"""
         filtered_moves = best_moves
         i = 0
+        print(len(self._filterList))
+        print(len(filtered_moves))
         while len(filtered_moves) > 1 and i < len(self._filterList):
             filtered_moves = self._filterList[i](filtered_moves)
             i += 1
