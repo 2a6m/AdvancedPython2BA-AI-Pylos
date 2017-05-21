@@ -233,7 +233,7 @@ class PylosClient(game.GameClient):
         tg = Tree_Generator()
         tree = tg.start(state)
         PAI = AI.AI(tree)
-        return PAI.get_next_move()
+        return json.dumps(PAI.get_next_move())
 
 class Tree_Generator():
     '''Creates the Tree chart for PylosAI'''
@@ -381,7 +381,7 @@ class Tree_Generator():
     def generate_tree(self, tree, it=0, gen=0):
         # children = self.generate_from_free(tree, tree.state)
         children = self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
-        if it >= 4:# mettre 4 poir le 1er tour mais 3 pour la suite du jeu
+        if it >= 3:# mettre 4 poir le 1er tour mais 3 pour la suite du jeu
             pass
         else:
             it += 1

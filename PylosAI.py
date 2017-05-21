@@ -17,18 +17,20 @@ class AI():
 
 # -- Filters --
     def nothing(self, lst_moves):
-        return
+        return lst_moves
 
     def center(self, lst_moves):
         center_moves = [[0, 1, 1], [0, 1, 2], [0, 2, 1], [0, 2, 2]]
         for tree in lst_moves:
             if tree.move['to'] not in center_moves:
-                del lst_moves[tree]
+                lst_moves.remove(tree)
+        return lst_moves
 
     def transfert(self, lst_moves):
         for tree in lst_moves:
             if 'from' not in tree.move:
-                del lst_moves[tree]
+                lst_moves.remove(tree)
+        return lst_moves
 
 # --  --
     def loadTree(self, state):
@@ -51,7 +53,7 @@ class AI():
         return tree
 
     def get_next_move(self):
-        return self.apply_filters(self.search_best_moves()).move
+        return self.apply_filters(self.search_best_moves())[0].move
 
     def search_best_moves(self):
         tree = self._tree
@@ -71,8 +73,6 @@ class AI():
         """ATTENTION: IL FAUT ENCORE CREER UN ATTRIBUT ET DES FILTRES A LA CLASS AFIN QUE CETTE FONCTION SOIT COMPLETE"""
         filtered_moves = best_moves
         i = 0
-        print(len(self._filterList))
-        print(len(filtered_moves))
         while len(filtered_moves) > 1 and i < len(self._filterList):
             filtered_moves = self._filterList[i](filtered_moves)
             i += 1

@@ -42,6 +42,7 @@ class Tree():
 
     def set_delta(self, delta):
         self.__value[2] = delta
+
     def t2dico(self):
         dico = dict()
         dico['state'] = self.state._state['visible']
