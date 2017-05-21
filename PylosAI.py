@@ -13,7 +13,7 @@ class AI():
 
     @property
     def tree(self):
-        return self.__tree
+        return self._tree
 
 # -- Filters --
     def nothing(self, lst_moves):
@@ -51,11 +51,12 @@ class AI():
         return tree
 
     def get_next_move(self):
-        return self.apply_filters(self.search_best_moves).move
+        return self.apply_filters(self.search_best_moves()).move
 
     def search_best_moves(self):
         tree = self._tree
         delta = self.get_delta(tree, tree.state._state['visible']['reserve'])
+        print("delta found", delta)
         best_moves = []
         for child in tree.children:
             if child.delta == delta:
@@ -89,15 +90,22 @@ class AI():
         if len(tree.children) == 0:
             # Case where the tree is an end-node:
             price = self.calculate_price(i_res, tree.state._state['visible']['reserve'])
-            tree.delta = price
+            tree.set_delta(price)
+            print("feuille trouvée")
         if tree.delta != None:
             return tree.delta
         if tree.delta == None:
             delta = []
             for child in tree.children:
                 delta.append(self.get_delta(child, i_res))
-            tree.delta = [min(delta), max(delta)][tree.state._state['visible']['turn']]
+            print(min(delta), max(delta), tree.state._state['visible']['turn'])
+            var = [min(delta), max(delta)]
+            print("TREE.DELTA", tree.delta)
+            tree.set_delta(var[tree.state._state['visible']['turn']])
             return tree.delta
+
+#TESTFIELD
+
 
     """
     def scan_for_best_move(self, tree):
