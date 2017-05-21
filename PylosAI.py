@@ -6,12 +6,8 @@ import Tree
 
 class AI():
     '''Class representing a AI for the Pylos game.'''
-    def __init__(self, state, player):
-        self._moves = {}
-        # Forme du dico ?? {'move':price, 'move':price}
-        # Dico ou liste ?? meilleur pour un arbre ??
-        self.__origin_state = state
-        self.__player = player
+    def __init__(self, tree):
+        self._tree = copy.deepcopy(tree)
         self._filterList = [self.nothing, self.center, self.transfert]
 
 
@@ -58,7 +54,7 @@ class AI():
         return self.apply_filters(self.search_best_moves).move
 
     def search_best_moves(self):
-        tree = self.__tree
+        tree = self._tree
         delta = self.get_delta(tree, tree.state._state['visible']['reserve'])
         best_moves = []
         for child in tree.children:

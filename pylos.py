@@ -178,7 +178,7 @@ class PylosState(game.GameState):
             print()
         
         print('{} to play !'.format(self.player2str(state['turn'])))
-        #print(json.dumps(self._state['visible'], indent=4))       
+        #print(json.dumps(self._state['visible'], indent=4))
 
 class PylosServer(game.GameServer):
     '''Class representing a server for the Pylos game.'''
@@ -190,7 +190,6 @@ class PylosServer(game.GameServer):
             self._state.update(json.loads(move), self.currentplayer)
         except json.JSONDecodeError:
             raise game.InvalidMoveException('move must be valid JSON string: {}'.format(move))
-
 
 class PylosClient(game.GameClient):
     '''Class representing a client for the Pylos game.'''
@@ -234,7 +233,7 @@ class PylosClient(game.GameClient):
         tg = Tree_Generator()
         tree = tg.start(state)
         PAI = AI.AI(tree)
-        return PAI.get_next_move(tree)
+        return PAI.get_next_move()
 
 class Tree_Generator():
     '''Creates the Tree chart for PylosAI'''
