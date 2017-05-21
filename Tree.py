@@ -52,11 +52,23 @@ class Tree():
         return dico
 
     def saveTree(self, file):
+        '''
+        save a tree in a json file
+
+        :param file: json file
+        :return:
+        '''
         data = self.t2dico()
         with open(file, 'w') as f:
             json.dump(data, f, indent=4)
 
     def addChild(self, tree):
+        '''
+        add a child to the node
+
+        :param tree: tree object
+        :return:
+        '''
         self.__children.append(tree)
         return
 
@@ -75,6 +87,11 @@ class Tree():
         return lst
 
     def endTree(self):
+        '''
+        find all the child at th end of the tree
+
+        :return: list of end child
+        '''
         children = []
         if len(self.children) == 0:
             return self
