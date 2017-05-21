@@ -259,21 +259,6 @@ class Tree_Generator():
                         pass
         return board
 
-    def square_remove(self, state):
-        '''
-        :param state:
-        :return: List of all the possible combinations of marbles the AI can remove after it has created a square
-        NOTE: THIS FUNCTION ISN'T USED ANYMORE AND IS NOT WORKING. board_remove now uses 2 param
-        '''
-        data = self.board_remove(state, 0)
-        ans = []
-        for i in range(len(data)):
-            combi = [data[i]]
-            for j in range(i, len(data)):
-                combi.append(data[j])
-            ans.append(tuple(combi))
-        return ans
-
     def generate_from_free(self, state):
         '''
         Look all the moves it's possible to do by placing a ball
@@ -376,8 +361,7 @@ class Tree_Generator():
         '''
         t0 = Tree.Tree(state)
         self.generate_tree(t0)
-        t0.saveTree("TEST.json")
-        print('arbre sauvé')
+        print('tree generated')
         return t0
 
     def generate_tree(self, tree, it=0, gen=0):
@@ -418,16 +402,6 @@ class Tree_Generator():
             #print("t0f = ", tree)
             #print(it, gen, sep=' : ')
             return
-
-    def loadTree(self, file):
-        '''
-
-        :param file:
-        :return:
-        '''
-        with open(file) as f:
-            tree = Tree.dico2t(json.load(f))
-        return tree
 
 if __name__ == '__main__':
     # Create the top-level parser

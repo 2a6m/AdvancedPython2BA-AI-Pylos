@@ -9,61 +9,6 @@ class Tree_Generator():
     def __init__(self):
         pass
 
-    """
-
-    def save_place_upperlayer(self, state, pos):
-        return
-
-    def save_move_upperlayer(self, state, pos):
-        for balls in self.board_remove():
-            if balls[0] == int((pos[0])-1):
-                price = 0
-                move = {'move': 'move', 'from': list(balls), 'to': list(pos)}
-        return move
-
-    def save_place_square_r1(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 1:
-                price = 0
-                move = {'move': 'place', 'to': list(place), 'remove': self.board_remove()[0]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def save_place_square_r2(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 2:
-                price = -1
-                # AI doit chercher quelles billes il va retirer
-                move = {'move': 'place', 'to': list(place), 'remove': [self.board_remove()[0], self.board_remove()[1]]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def save_move_square_r1(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 2:
-                price = -1
-                # AI doit chercher quelles billes il va retirer
-                move = {'move': 'move', 'from': self.board_remove()[0], 'to': list(place), 'remove': [self.board_remove()[1], self.board_remove()[2]]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def save_move_square_r2(self, place):
-        if self._state.createSquare(place):
-            if len(self.board_remove()) == 3:
-                price = -2
-                # AI doit chercher quelles billes il va retirer
-                move = {'move': 'move', 'from': self.board_remove()[0], 'to': list(place), 'remove': [self.board_remove()[1], self.board_remove()[2]]}
-                self._moves[json.dumps(move)] = (place, price)
-        return
-
-    def save_place(self, pos):
-        price = 1
-        move = {'move': 'place', 'to': list(pos)}
-        return (price, move)
-
-    """
-
-
     def board_free(self, state):
         '''
         travel the board and save all the free positions in a list
@@ -100,20 +45,6 @@ class Tree_Generator():
                     except:
                         pass
         return board
-
-    def square_remove(self, state):
-        """
-        :param state:
-        :return: List of all the possible combinations of marbles the AI can remove after it has created a square
-        """
-        data = self.board_remove(state)
-        ans = []
-        for i in range(len(data)):
-            combi = [data[i]]
-            for j in range(i, len(data)):
-                combi.append(data[j])
-            ans.append(tuple(combi))
-        return ans
 
     def generate_from_free(self, tree, state):
         # Case where the AI places a marble
@@ -228,62 +159,3 @@ class Tree_Generator():
         #print("t0f = ", tree)
         #print(it, gen, sep=' : ')
         return
-
-    def loadTree(self, file):
-        with open(file) as f:
-            tree = Tree.dico2t(json.load(f))
-        return tree
-
-# TEST FIELD
-
-test = Tree_Generator()
-state_test = pyl.PylosState({'board': [[[1, 1, 1, 1], [1, None, None, 1], [0, None, None, 0],[0, 0, 0, 0]],
-                                       [[None, None, None], [None, None, None],[None, None, None]],
-                                       [[None, None],[None, None]],
-                                       [[None]]],'reserve': [9, 9],'turn': 0})
-test.start(state_test)
-
-'''
-print(state_test)
-tree = test.loadTree('TEST.json')
-print('tree loaded')
-a = tree.find(state_test)
-if len(a) == 1:
-    tree = a[0]
-    print(tree.endTree())
-    for end in tree.endTree():
-        for e in end:
-            print(e)
-            print('type state', type(e.state))
-            print('type', type(e))
-            test.generate_tree(e)
-    tree.saveTree('TEST3,5.json')
-    print('tree saved')
-else:
-    tree = Tree.Tree(state_test,
-                     state_test._state['visible']['reserve'][0] - state_test._state['visible']['reserve'][1], [])
-    test.generate_tree(tree)
-tree.saveTree('TEST3,5.json')
-
-
-tree = test.loadTree('Test 3,5.json')
-a = tree.find(state_test)
-print(a)
-'''
-
-'''
-        t = tree
-        # il ne fait qu'un seul branchage
-        if len(t.children) == 0:
-            return
-        else:
-            for child in t.children:
-                print(child.state)
-                print(type(child.state))
-                children = self.generate_from_free(child, child.state)
-                # self.generate_from_remove(child, child.state)
-                for ch in children:
-                    tree.addChild(ch)
-                    self.generate_tree(ch)
-            # il ne fait qu'un seul branchage
-'''
