@@ -280,10 +280,11 @@ class Tree_Generator():
                 child_state2 = copy.deepcopy(PylosState(state._state['visible']))
                 if len(combi) >= 2:
                     move['remove'] = [combi[0], combi[1]]
+                    price -= 2
                 else:
                     move['remove'] = combi
+                    price -= 1
                 child_state2.update(move, child_state2._state['visible']['turn'])
-                price -= len(combi)
                 children.append(Tree.Tree(child_state2, None, move))
             else:
                 child_state = copy.deepcopy(PylosState(state._state['visible']))
@@ -310,10 +311,11 @@ class Tree_Generator():
                         child_state3 = copy.deepcopy(PylosState(state._state['visible']))
                         if len(combi) >= 2:
                             move['remove'] = [combi[0], combi[1]]
+                            price -= 2
                         else:
                             move['remove'] = combi
+                            price -= 1
                         child_state3.update(move, child_state3._state['visible']['turn'])
-                        price -= len(combi)
                         children.append(Tree.Tree(child_state3, None, move))
                     else:
                         children.append(Tree.Tree(child_state2, None, move))
