@@ -203,6 +203,12 @@ class PylosClient(game.GameClient):
 
     #return move as string
     def _nextmove(self, state):
+        '''
+        Return the move of the player to the server
+
+        :param state: state of the game, pylosState object
+        :return: the move
+        '''
         tg = Tree_Generator()
         tree = tg.start(state)
         PAI = AI.AI(tree)
@@ -235,7 +241,8 @@ class Tree_Generator():
 
     def board_remove(self, state, player):
         '''
-        travel the board and save all the marbles that can be removed
+        travel the board and save all the balls that can be removed
+
         :return: list of removable marbles
         '''
         board = list()
@@ -253,11 +260,11 @@ class Tree_Generator():
         return board
 
     def square_remove(self, state):
-        """
+        '''
         :param state:
         :return: List of all the possible combinations of marbles the AI can remove after it has created a square
         NOTE: THIS FUNCTION ISN'T USED ANYMORE AND IS NOT WORKING. board_remove now uses 2 param
-        """
+        '''
         data = self.board_remove(state, 0)
         ans = []
         for i in range(len(data)):
@@ -267,7 +274,13 @@ class Tree_Generator():
             ans.append(tuple(combi))
         return ans
 
-    def generate_from_free(self, tree, state):
+    def generate_from_free(self, state):
+        '''
+        Look all the moves it's possible to do by placing a ball
+
+        :param state: state of the game, pylosState object
+        :return: list of future moves
+        '''
         # Case where the AI places a marble
         children = []
         for pos in self.board_free(state):
@@ -292,7 +305,13 @@ class Tree_Generator():
                 children.append(Tree.Tree(child_state, None, move))
         return children
 
-    def generate_from_remove(self, tree, state):
+    def generate_from_remove(self, state):
+        '''
+        Look all the moves it's possible to do by moving a ball
+
+        :param state: state of the game, pylosState object
+        :return: list of future moves
+        '''
         # Case where the AI deplaces an existing marble
         children = []
         for pos in self.board_remove(state, state._state['visible']['turn']):
@@ -349,6 +368,12 @@ class Tree_Generator():
 
 # Generate a Tree
     def start(self, state):
+        '''
+        Create a node from a received state and ask to generate a tree
+
+        :param state: a pylosState object
+        :return: tree create from the node
+        '''
         t0 = Tree.Tree(state)
         self.generate_tree(t0)
         t0.saveTree("TEST.json")
@@ -356,12 +381,18 @@ class Tree_Generator():
         return t0
 
     def generate_tree(self, tree, it=0, gen=0):
+        '''
+        Receive a root node and develop the children of the nodes
+
+        :param tree: initial node, a tree object
+        :return:
+        '''
         if tree.state._state['visible']['reserve'][0] == 0 or tree.state._state['visible']['reserve'][1] == 0:
             print('NO MORE SPHERE')
             pass
         else:
             # children = self.generate_from_free(tree, tree.state)
-            children = self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
+            children = self.generate_from_free(tree.state) + self.generate_from_remove(tree.state)
             if it >= 3:# mettre 4 poir le 1er tour mais 3 pour la suite du jeu
                 pass
             else:
@@ -389,6 +420,11 @@ class Tree_Generator():
             return
 
     def loadTree(self, file):
+        '''
+
+        :param file:
+        :return:
+        '''
         with open(file) as f:
             tree = Tree.dico2t(json.load(f))
         return tree
