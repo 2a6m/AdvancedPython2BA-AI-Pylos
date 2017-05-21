@@ -16,8 +16,8 @@ class AI():
 
 
     @property
-    def player(self):
-        return self.__player
+    def tree(self):
+        return self.__tree
 
 # -- Filters --
     def nothing(self, lst_moves):
@@ -54,12 +54,15 @@ class AI():
             #tree = Tree_Generator.generate_tree(state)
         return tree
 
-    def search_best_moves(self, state):
-        tree = self.loadTree(state)
-        delta = self.get_delta(tree, state._state['visible']['reserve'])
+    def get_next_move(self):
+        return self.apply_filters(self.search_best_moves).move
+
+    def search_best_moves(self):
+        tree = self.__tree
+        delta = self.get_delta(tree, tree.state._state['visible']['reserve'])
         best_moves = []
         for child in tree.children:
-            if child.delta == tree.delta:
+            if child.delta == delta:
                 best_moves.append(child)
                 #It isn't necessary to deepcopy the whole tree as we don't need its children anymore
         return best_moves
