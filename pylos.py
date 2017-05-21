@@ -203,37 +203,11 @@ class PylosClient(game.GameClient):
 
     #return move as string
     def _nextmove(self, state):
-        '''
-        example of moves
-        coordinates are like [layer, row, colums]
-        move = {
-            'move': 'place',
-            'to': [0,1,1]
-        }
-
-        move = {
-            'move': 'move',
-            'from': [0,1,1],
-            'to': [1,1,1]
-        }
-
-        move = {
-            'move': 'move',
-            'from': [0,1,1],
-            'to': [1,1,1]
-            'remove': [
-                [1,1,1],
-                [1,1,2]
-            ]
-        }
-        
-        return it in JSON
-        '''
-        print('client', state)
         tg = Tree_Generator()
         tree = tg.start(state)
         PAI = AI.AI(tree)
         return json.dumps(PAI.get_next_move())
+
 
 class Tree_Generator():
     '''Creates the Tree chart for PylosAI'''
@@ -309,11 +283,11 @@ class Tree_Generator():
                     move['remove'] = combi
                 child_state2.update(move, child_state2._state['visible']['turn'])
                 price -= len(combi)
-                children.append(Tree.Tree(child_state2, price, move))
+                children.append(Tree.Tree(child_state2, None, move))
             else:
                 child_state = copy.deepcopy(PylosState(state._state['visible']))
                 child_state.update(move, child_state._state['visible']['turn'])
-                children.append(Tree.Tree(child_state, price, move))
+                children.append(Tree.Tree(child_state, None, move))
         return children
 
     def generate_from_remove(self, tree, state):
@@ -339,9 +313,9 @@ class Tree_Generator():
                             move['remove'] = combi
                         child_state3.update(move, child_state3._state['visible']['turn'])
                         price -= len(combi)
-                        children.append(Tree.Tree(child_state3, price, move))
+                        children.append(Tree.Tree(child_state3, None, move))
                     else:
-                        children.append(Tree.Tree(child_state2, price, move))
+                        children.append(Tree.Tree(child_state2, None, move))
         return children
 
 # test symetry

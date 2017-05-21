@@ -4,6 +4,7 @@ import copy
 import os.path
 import Tree
 
+
 class AI():
     '''Class representing a AI for the Pylos game.'''
     def __init__(self, tree):
@@ -46,7 +47,6 @@ class AI():
         elif os.path.isfile(tree_file):
             tree = Tree.dico2t(json.load(tree_file))
         else:
-            print('THERE IS NO GAME TREE')
             tree = {}
             #y = Tree_Generator()
             #tree = Tree_Generator.generate_tree(state)
@@ -62,11 +62,8 @@ class AI():
         best_moves = []
         for child in tree.children:
             if child.delta == delta:
-                print(child.delta)
-                print(child)
                 best_moves.append(child)
                 #It isn't necessary to deepcopy the whole tree as we don't need its children anymore
-        print(best_moves)
         return best_moves
 
     def apply_filters(self, best_moves):
@@ -92,25 +89,28 @@ class AI():
         :return: value of difference of marbles between the first and second player. The value is positiv if the first
         player has the upper hand.
         '''
+        print('GET DELTA EST APPLIQUEE SUR UN ARBRE AYANT ', len(tree.children), ' ENFANTS')
         if len(tree.children) == 0:
             # Case where the tree is an end-node:
             price = self.calculate_price(i_res, tree.state._state['visible']['reserve'])
             tree.set_delta(price)
             print("feuille trouvée")
         if tree.delta != None:
+            print('delta deja existant et renvoyé')
             return tree.delta
         if tree.delta == None:
             delta = []
             for child in tree.children:
+                print('     delta du CHILD', child.delta)
                 delta.append(self.get_delta(child, i_res))
+                print('     delta du TREE', tree.delta)
             print(min(delta), max(delta), tree.state._state['visible']['turn'])
             var = [min(delta), max(delta)]
-            print("TREE.DELTA", tree.delta)
             tree.set_delta(var[tree.state._state['visible']['turn']])
+            print("TREE.DELTA", tree.delta)
             return tree.delta
 
 #TESTFIELD
-
 
     """
     def scan_for_best_move(self, tree):
