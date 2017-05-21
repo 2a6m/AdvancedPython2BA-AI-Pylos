@@ -206,6 +206,7 @@ class PylosClient(game.GameClient):
         tg = Tree_Generator()
         tree = tg.start(state)
         PAI = AI.AI(tree)
+        print('PAI.get_next_move()', PAI.get_next_move())
         return json.dumps(PAI.get_next_move())
 
 
@@ -353,33 +354,37 @@ class Tree_Generator():
         return t0
 
     def generate_tree(self, tree, it=0, gen=0):
-        # children = self.generate_from_free(tree, tree.state)
-        children = self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
-        if it >= 3:# mettre 4 poir le 1er tour mais 3 pour la suite du jeu
+        if tree.state._state['visible']['reserve'][0] == 0 or tree.state._state['visible']['reserve'][1] == 0:
+            print('NO MORE SPHERE')
             pass
         else:
-            it += 1
-            for child in children:
-                if len(tree.children) == 0:
-                    gen += 1
-                    tree.addChild(child)
-                    self.generate_tree(child, it, gen)
-                else:
-                    try:
-                        for ch in tree.children:
-                            m1 = child.state._state['visible']['board'][0]
-                            m2 = ch.state._state['visible']['board'][0]
-                            self.noSymetry(m1, m2)
+            # children = self.generate_from_free(tree, tree.state)
+            children = self.generate_from_free(tree, tree.state) + self.generate_from_remove(tree, tree.state)
+            if it >= 3:# mettre 4 poir le 1er tour mais 3 pour la suite du jeu
+                pass
+            else:
+                it += 1
+                for child in children:
+                    if len(tree.children) == 0:
                         gen += 1
                         tree.addChild(child)
                         self.generate_tree(child, it, gen)
-                    except:
-                        # print('symetry')
-                        pass
+                    else:
+                        try:
+                            for ch in tree.children:
+                                m1 = child.state._state['visible']['board'][0]
+                                m2 = ch.state._state['visible']['board'][0]
+                                self.noSymetry(m1, m2)
+                            gen += 1
+                            tree.addChild(child)
+                            self.generate_tree(child, it, gen)
+                        except:
+                            # print('symetry')
+                            pass
 
-        #print("t0f = ", tree)
-        #print(it, gen, sep=' : ')
-        return
+            #print("t0f = ", tree)
+            #print(it, gen, sep=' : ')
+            return
 
     def loadTree(self, file):
         with open(file) as f:

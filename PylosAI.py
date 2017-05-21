@@ -58,7 +58,7 @@ class AI():
     def search_best_moves(self):
         tree = self._tree
         delta = self.get_delta(tree, tree.state._state['visible']['reserve'])
-        print("delta found", delta)
+        #print("delta found", delta)
         best_moves = []
         for child in tree.children:
             if child.delta == delta:
@@ -89,25 +89,25 @@ class AI():
         :return: value of difference of marbles between the first and second player. The value is positiv if the first
         player has the upper hand.
         '''
-        print('GET DELTA EST APPLIQUEE SUR UN ARBRE AYANT ', len(tree.children), ' ENFANTS')
+        #print('GET DELTA EST APPLIQUEE SUR UN ARBRE AYANT ', len(tree.children), ' ENFANTS')
         if len(tree.children) == 0:
             # Case where the tree is an end-node:
             price = self.calculate_price(i_res, tree.state._state['visible']['reserve'])
             tree.set_delta(price)
-            print("feuille trouvée")
+            #print("feuille trouvée")
         if tree.delta != None:
-            print('delta deja existant et renvoyé')
+            #print('delta deja existant et renvoyé')
             return tree.delta
         if tree.delta == None:
             delta = []
             for child in tree.children:
-                print('     delta du CHILD', child.delta)
+                #print('     delta du CHILD', child.delta)
                 delta.append(self.get_delta(child, i_res))
-                print('     delta du TREE', tree.delta)
-            print(min(delta), max(delta), tree.state._state['visible']['turn'])
+                #print('     delta du TREE', tree.delta)
+                #print(min(delta), max(delta), tree.state._state['visible']['turn'])
             var = [min(delta), max(delta)]
             tree.set_delta(var[tree.state._state['visible']['turn']])
-            print("TREE.DELTA", tree.delta)
+            #print("TREE.DELTA", tree.delta)
             return tree.delta
 
 #TESTFIELD
