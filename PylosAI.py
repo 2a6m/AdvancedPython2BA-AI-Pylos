@@ -12,13 +12,29 @@ class AI():
         # Dico ou liste ?? meilleur pour un arbre ??
         self.__origin_state = state
         self.__player = player
+        self._filterList = [self.nothing, self.center, self.transfert]
 
 
     @property
     def player(self):
         return self.__player
 
+# -- Filters --
+    def nothing(self, lst_moves):
+        return
 
+    def center(self, lst_moves):
+        center_moves = [[0, 1, 1], [0, 1, 2], [0, 2, 1], [0, 2, 2]]
+        for move in lst_moves:
+            if move.move['to'] not in center_moves:
+                del lst_moves[move]
+
+    def transfert(self, lst_moves):
+        for move in lst_moves:
+            if 'from' not in move.move:
+                del lst_moves[move]
+
+# --  --
     def loadTree(self, state):
         '''
         look if there is a tree or a tree update
@@ -38,30 +54,30 @@ class AI():
             #tree = Tree_Generator.generate_tree(state)
         return tree
 
-
     def search_best_moves(self, state):
         tree = self.loadTree(state)
         delta = self.get_delta(tree, state._state['visible']['reserve'])
         best_moves = []
         for child in tree.children:
             if child.delta == tree.delta:
-                best_moves.append(tree)
+                best_moves.append(child)
                 #It isn't necessary to deepcopy the whole tree as we don't need its children anymore
         return best_moves
-
 
     def apply_filters(self, best_moves):
         """ATTENTION: IL FAUT ENCORE CREER UN ATTRIBUT ET DES FILTRES A LA CLASS AFIN QUE CETTE FONCTION SOIT COMPLETE"""
         filtered_moves = best_moves
-        for filter in self._filterList:
-            filtered_moves = filter(filtered_moves)
+        i = 0
+        while len(filtered_moves) > 1 and i < len(self._filterList):
+            filtered_moves = self._filterList[i](filtered_moves)
+            i += 1
+        if len(filtered_moves) == 0:    # sécu si les filtres sont trop bourrins
+            return best_moves[0]
         return filtered_moves
-
 
     def calculate_price(self, i_res, f_res):
         #The price is the number of marbles the first player placed mius the number of marbles the second player placed
         return i_res[0] - f_res[0] - i_res[1] + f_res[1]
-
 
     def get_delta(self, tree, i_res):
         '''
