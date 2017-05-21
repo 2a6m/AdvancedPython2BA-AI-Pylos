@@ -12,12 +12,12 @@ class AI():
         # Dico ou liste ?? meilleur pour un arbre ??
         self.__origin_state = state
         self.__player = player
-        self.strategies = [self.pickhighest(), self.picklowest()]
 
 
     @property
     def player(self):
         return self.__player
+
 
     def loadTree(self, state):
         '''
@@ -38,40 +38,53 @@ class AI():
             #tree = Tree_Generator.generate_tree(state)
         return tree
 
-    def pickhighest(self, ref, val):
-        return val > ref
 
-    def picklowest(self, ref, val):
-        return val < ref
-
-    def choose(self, matrix):
-        '''
-        Look at the end of the trees and calculated the percentage of victory
-
-        :param matrix:
-        :return: choose the move with best percentage
-        '''
-        mean = []
-        for i in matrix:
-            for j in matrix:
-                m_elem = (matrix[i][j].endState(self.player), matrix[i][j]['move'], matrix[i][j])
-                mean.append(m_elem)
-        value = 0
-        move = ''
-        tree = {}
-        for elem in mean:
-            if elem[0] > value:
-                value = elem[0]
-                move = elem[1]
-                tree = elem[2]
-        tree.saveTree('GAME_TREE.json')
-        return move
-
-    def search(self, state):
+    def search_best_moves(self, state):
         tree = self.loadTree(state)
-        possibilities = tree.find(state)
-        return self.choose(possibilities)
+        delta = self.get_delta(tree, state._state['visible']['reserve'])
+        best_moves = []
+        for child in tree.children:
+            if child.delta == tree.delta:
+                best_moves.append(tree)
+                #It isn't necessary to deepcopy the whole tree as we don't need its children anymore
+        return best_moves
 
+
+    def apply_filters(self, best_moves):
+        """ATTENTION: IL FAUT ENCORE CREER UN ATTRIBUT ET DES FILTRES A LA CLASS AFIN QUE CETTE FONCTION SOIT COMPLETE"""
+        filtered_moves = best_moves
+        for filter in self._filterList:
+            filtered_moves = filter(filtered_moves)
+        return filtered_moves
+
+
+    def calculate_price(self, i_res, f_res):
+        #The price is the number of marbles the first player placed mius the number of marbles the second player placed
+        return i_res[0] - f_res[0] - i_res[1] + f_res[1]
+
+
+    def get_delta(self, tree, i_res):
+        '''
+
+        :param tree:
+        :param i_res: Initial reserve the function has to use in order to calculate the price from a reference point
+        :return: value of difference of marbles between the first and second player. The value is positiv if the first
+        player has the upper hand.
+        '''
+        if len(tree.children) == 0:
+            # Case where the tree is an end-node:
+            price = self.calculate_price(i_res, tree.state._state['visible']['reserve'])
+            tree.delta = price
+        if tree.delta != None:
+            return tree.delta
+        if tree.delta == None:
+            delta = []
+            for child in tree.children:
+                delta.append(self.get_delta(child, i_res))
+            tree.delta = [min(delta), max(delta)][tree.state._state['visible']['turn']]
+            return tree.delta
+
+    """
     def scan_for_best_move(self, tree):
         '''
         Scan trough the given tree and evaluates de cost at each terminal move as the enemy always plays
@@ -109,26 +122,32 @@ class AI():
                 ans + self.get_latest_children(child_tree)
         return ans
 
-    def update_delta(self, tree):
-        pass
+    def choose(self, matrix):
+        '''
+        Look at the end of the trees and calculated the percentage of victory
 
-    def calculate_price(self, i_res, f_res):
-        #The price is the number of marbles the first player placed mius the number of marbles the second player placed
-        return i_res[0] - f_res[0] - i_res[1] + f_res[1]
+        :param matrix:
+        :return: choose the move with best percentage
+        '''
+        mean = []
+        for i in matrix:
+            for j in matrix:
+                m_elem = (matrix[i][j].endState(self.player), matrix[i][j]['move'], matrix[i][j])
+                mean.append(m_elem)
+        value = 0
+        move = ''
+        tree = {}
+        for elem in mean:
+            if elem[0] > value:
+                value = elem[0]
+                move = elem[1]
+                tree = elem[2]
+        tree.saveTree('GAME_TREE.json')
+        return move
 
-    def recursiv_update(self, tree, i_res):
-        delta = tree.children[0].delta
-        for child in tree.children:
-            if len(child.children) == 0:
-                #Case where the child is an end-node:
-                price = self.calculate_price(i_res, child.state._state['visible']['reserve'])
-                child.delta = price
-            if child.delta != None:
-                turn = child.state._state['visible']['turn']
-                strategy = self.strategies[turn]
-                if strategy(delta, child.delta):
-                    delta = child.delta
-                tree.delta = delta
-            if child.delta == None:
-                self.recursive_update(child, i_res)
+    def search(self, state):
+        tree = self.loadTree(state)
+        possibilities = tree.find(state)
+        return self.choose(possibilities)
 
+    """
